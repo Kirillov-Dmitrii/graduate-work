@@ -2,13 +2,14 @@ package ru.skypro.homework.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.Null;
 import java.util.Collection;
 
 @Data
 public class ResponseWrapperAds {
-
+    @Null
     private Integer count;
-
-    private Collection<Ads> results;
+    @Null
+    private Collection<AdsDto> results;
 
 }

@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
-import ru.skypro.homework.dto.User;
+import ru.skypro.homework.dto.UserDto;
 
 @RestController
 @Tag(name = "Пользователь", description = "Управление данными пользователя")
@@ -25,7 +25,7 @@ public class UserController {
             description = "Выводит данные о пользователе"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = UserDto.class))),
 
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
 
@@ -33,8 +33,8 @@ public class UserController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/me")
-    public ResponseEntity<User> getUser() {
-        return new ResponseEntity<User>(HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<UserDto> getUser() {
+        return new ResponseEntity<UserDto>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
             summary = "Установить пароль",
@@ -57,7 +57,7 @@ public class UserController {
             description = "Позволяет обновить информацию о пользователе"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = UserDto.class))),
 
             @ApiResponse(responseCode = "204", description = "No Content"),
 
@@ -67,8 +67,8 @@ public class UserController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping("/me")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
-        return new ResponseEntity<User>(HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
+        return new ResponseEntity<UserDto>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
             summary = "Показать аватарку",

@@ -31,7 +31,7 @@ public class AdsController {
             description = ""
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = "*/*", schema = @Schema(implementation = Ads.class))),
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = "*/*", schema = @Schema(implementation = AdsDto.class))),
 
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
 
@@ -39,8 +39,8 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PostMapping
-    ResponseEntity<Ads> addAds(@RequestBody CreateAds createAds) {
-        return new ResponseEntity<Ads>(HttpStatus.NOT_IMPLEMENTED);
+    ResponseEntity<AdsDto> addAds(@RequestBody CreateAds createAds) {
+        return new ResponseEntity<AdsDto>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
             summary = "Получить объявления пользователя",
@@ -80,7 +80,7 @@ public class AdsController {
             description = ""
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = AdsComment.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = AdsCommentDto.class))),
 
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
 
@@ -88,8 +88,8 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PostMapping("/{ad_pk}/comments")
-    ResponseEntity<AdsComment> addComments(@PathVariable String ad_pk, @RequestBody AdsComment adsComment) {
-        return new ResponseEntity<AdsComment>(HttpStatus.NOT_IMPLEMENTED);
+    ResponseEntity<AdsCommentDto> addComments(@PathVariable String ad_pk, @RequestBody AdsCommentDto adsCommentDto) {
+        return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
             summary = "Получить объявление",
@@ -122,7 +122,7 @@ public class AdsController {
             description = "Позволяет отредактировать объявление"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = Ads.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = AdsDto.class))),
 
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
 
@@ -130,20 +130,20 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping("/{id}")
-    ResponseEntity<Ads> updateAds(@PathVariable Integer id, @RequestBody CreateAds adsBody) {
-        return new ResponseEntity<Ads>(HttpStatus.NOT_IMPLEMENTED);
+    ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAds adsBody) {
+        return new ResponseEntity<AdsDto>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
             summary = "Посмотреть комментарий",
             description = "Позволяет просмотреть определенный комментарий к объявлению"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = AdsComment.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = AdsCommentDto.class))),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/{ad_pk}/comments/{id}")
-    ResponseEntity<AdsComment> getComments(@PathVariable("ad_pk") String ad_pk, @PathVariable("id") Integer id) {
-        return new ResponseEntity<AdsComment>(HttpStatus.NOT_IMPLEMENTED);
+    ResponseEntity<AdsCommentDto> getComments(@PathVariable("ad_pk") String ad_pk, @PathVariable("id") Integer id) {
+        return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
             summary = "Удалить комментарий",
@@ -166,7 +166,7 @@ public class AdsController {
             description = "Позволяет редактировать комментарий"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = AdsComment.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = AdsCommentDto.class))),
 
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
 
@@ -174,7 +174,7 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping("/{ad_pk}/comments/{id}")
-    ResponseEntity<AdsComment> updateComments(@PathVariable("ad_pk") String ad_pk, @PathVariable("id") Integer id, @RequestBody AdsComment adsCommentBody) {
-        return new ResponseEntity<AdsComment>(HttpStatus.NOT_IMPLEMENTED);
+    ResponseEntity<AdsCommentDto> updateComments(@PathVariable("ad_pk") String ad_pk, @PathVariable("id") Integer id, @RequestBody AdsCommentDto adsCommentDtoBody) {
+        return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
 }
