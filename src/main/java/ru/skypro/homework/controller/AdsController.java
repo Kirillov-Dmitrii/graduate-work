@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.*;
 
+import javax.validation.constraints.Null;
+
 @RestController
 @Tag(name = "Объявления", description = "Работа с объявлениями и комментариями")
 @RequestMapping("/ads")
@@ -55,11 +57,11 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/me")
-    ResponseEntity<ResponseWrapperAds> getAdsMe(@RequestParam(value = "authenticated") Boolean authenticated,
-                                                @RequestParam(value = "authorities[0].authority") String authorities0Authority,
-                                                @RequestParam(value = "credentials") Object credentials,
-                                                @RequestParam(value = "details") Object details,
-                                                @RequestParam(value = "principal") Object principal) {
+    ResponseEntity<ResponseWrapperAds> getAdsMe(@RequestParam(value = "authenticated", required = false) Boolean authenticated,
+                                                @RequestParam(value = "authorities[0].authority", required = false) String authorities0Authority,
+                                                @RequestParam(value = "credentials", required = false) Object credentials,
+                                                @RequestParam(value = "details", required = false) Object details,
+                                                @RequestParam(value = "principal", required = false) Object principal) {
         return new ResponseEntity<ResponseWrapperAds>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(

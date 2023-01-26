@@ -13,12 +13,20 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UserDto;
+import ru.skypro.homework.mappers.UserMapper;
+import ru.skypro.homework.service.UserService;
 
 @RestController
 @Tag(name = "Пользователь", description = "Управление данными пользователя")
 @RequestMapping("/users")
 @CrossOrigin(value = "http://localhost:3000")
 public class UserController {
+
+    UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @Operation(
             summary = "Получить данные",
@@ -34,7 +42,12 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/me")
     public ResponseEntity<UserDto> getUser() {
-        return new ResponseEntity<UserDto>(HttpStatus.NOT_IMPLEMENTED);
+        UserDto userDto = userService.get();
+        if (userDto != null) {
+            return ResponseEntity.ok(userDto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
     @Operation(
             summary = "Установить пароль",
@@ -68,7 +81,12 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping("/me")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
-        return new ResponseEntity<UserDto>(HttpStatus.NOT_IMPLEMENTED);
+        UserDto userDtoCopy = userService.set(userDto);
+        if (userDtoCopy != null) {
+            return ResponseEntity.ok(userDtoCopy);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
     @Operation(
             summary = "Показать аватарку",
