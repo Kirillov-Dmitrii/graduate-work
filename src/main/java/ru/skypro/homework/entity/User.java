@@ -12,15 +12,14 @@ import javax.persistence.Table;
 @Data
 @Table(name = "users")
 public class User {
-
-    private String email;
-
-    private String firstName;
     @Id
-    @GeneratedValue(generator = "user_generator")
     private Integer id;
 
+    private String firstName;
+
     private String lastName;
+
+    private String email;
 
     private String phone;
 
@@ -35,6 +34,5 @@ public class User {
     private String password;
 
     private Role role;
-
 
 }
