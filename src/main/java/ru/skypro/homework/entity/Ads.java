@@ -3,15 +3,12 @@ package ru.skypro.homework.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Data
 @Table(name = "ads")
 public class Ads {
-
-    private String image;
 
     private Integer price;
 
@@ -23,5 +20,8 @@ public class Ads {
     private String title;
     @ManyToOne
     private User user;
+
+    @OneToMany
+    private List<AdsImage> adsImage;
 
 }

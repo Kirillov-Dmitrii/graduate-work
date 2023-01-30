@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.*;
+import ru.skypro.homework.service.AdsService;
 
 import javax.validation.constraints.Null;
 
@@ -18,6 +19,13 @@ import javax.validation.constraints.Null;
 @RequestMapping("/ads")
 @CrossOrigin(value = "http://localhost:3000")
 public class AdsController {
+
+    private AdsService adsService;
+
+    public AdsController(AdsService adsService) {
+        this.adsService = adsService;
+    }
+
     @Operation(
             summary = "Получить все объявления",
             description = ""
@@ -26,7 +34,7 @@ public class AdsController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = ResponseWrapperAds.class))) })
     @GetMapping
     public ResponseEntity<ResponseWrapperAds> getAllAds() {
-        return new ResponseEntity<ResponseWrapperAds>(HttpStatus.NOT_IMPLEMENTED);
+        return ResponseEntity.ok(adsService.getAll());
     }
     @Operation(
             summary = "Создать новое объявление",

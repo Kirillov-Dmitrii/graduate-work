@@ -4,9 +4,12 @@ import org.springframework.stereotype.Component;
 import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.ResponseWrapperAds;
 import ru.skypro.homework.entity.Ads;
+import ru.skypro.homework.entity.AdsImage;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class AdsMapper {
@@ -18,13 +21,13 @@ public class AdsMapper {
         return responseWrapperAds;
     }
 
-    public static AdsDto toAdsDto(Ads ads, List<String> adsImageCollection) {
+    public static AdsDto toAdsDto(Ads ads) {
         AdsDto adsDto = new AdsDto();
         adsDto.setAuthor(ads.getUser().getId());
         adsDto.setPk(ads.getPk());
-        adsDto.setImage(adsImageCollection);
         adsDto.setTitle(ads.getTitle());
         adsDto.setPrice(ads.getPrice());
+        adsDto.setImage(ads.getAdsImage().stream().map(e -> e.getImage()).collect(Collectors.toList()));
         return adsDto;
     }
 
@@ -32,10 +35,17 @@ public class AdsMapper {
         Ads ads = new Ads();
         ads.setTitle(adsDto.getTitle());
         ads.setPk(adsDto.getPk());
-        ads.setImage(adsDto.getImage().get(0));
         ads.setPrice(adsDto.getPrice());
         ads.getUser().setId(adsDto.getAuthor());
+        List<AdsImage> adsImage = Collections.emptyList();
+        adsDto.getImage().forEach(image -> {
+            AdsImage adsImage1 = new AdsImage();
+            adsImage1.setImage(image);
+            adsImage.add(adsImage1);
+        });
+        ads.setAdsImage(adsImage);
         return ads;
     }
+
 
 }
