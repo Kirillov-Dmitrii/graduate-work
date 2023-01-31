@@ -2,6 +2,7 @@ package ru.skypro.homework.mappers;
 
 import org.springframework.stereotype.Component;
 import ru.skypro.homework.dto.AdsDto;
+import ru.skypro.homework.dto.CreateAds;
 import ru.skypro.homework.dto.ResponseWrapperAds;
 import ru.skypro.homework.entity.Ads;
 import ru.skypro.homework.entity.AdsImage;
@@ -44,6 +45,14 @@ public class AdsMapper {
             adsImage.add(adsImage1);
         });
         ads.setAdsImage(adsImage);
+        return ads;
+    }
+
+    public static Ads toAds(CreateAds createAds) {
+        Ads ads = new Ads();
+        ads.setTitle(createAds.getTitle());
+        ads.setPrice(createAds.getPrice());
+        ads.setDescription(createAds.getDescription());
         return ads;
     }
 

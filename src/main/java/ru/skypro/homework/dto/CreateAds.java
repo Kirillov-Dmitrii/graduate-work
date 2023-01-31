@@ -8,13 +8,9 @@ import javax.validation.constraints.Null;
 @Data
 public class CreateAds {
     @NotNull
-    private String image;
-    @NotNull
     private Integer price;
     @NotNull
     private String description;
-    @Null
-    private Integer pk;
     @NotNull
     private String title;
 
