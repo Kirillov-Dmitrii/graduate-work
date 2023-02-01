@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 @Component
 public class AdsMapper {
 
-    public static ResponseWrapperAds toResponseWrapperAds(Collection<AdsDto> adsDtoCollection) {
+    public ResponseWrapperAds toResponseWrapperAds(Collection<AdsDto> adsDtoCollection) {
         ResponseWrapperAds responseWrapperAds = new ResponseWrapperAds();
         responseWrapperAds.setCount(adsDtoCollection.size());
         responseWrapperAds.setResults(adsDtoCollection);
         return responseWrapperAds;
     }
 
-    public static AdsDto toAdsDto(Ads ads) {
+    public AdsDto toAdsDto(Ads ads) {
         AdsDto adsDto = new AdsDto();
         adsDto.setAuthor(ads.getUser().getId());
         adsDto.setPk(ads.getPk());
@@ -32,7 +32,7 @@ public class AdsMapper {
         return adsDto;
     }
 
-    public static Ads toAds(AdsDto adsDto) {
+    public Ads toAds(AdsDto adsDto) {
         Ads ads = new Ads();
         ads.setTitle(adsDto.getTitle());
         ads.setPk(adsDto.getPk());
@@ -48,7 +48,7 @@ public class AdsMapper {
         return ads;
     }
 
-    public static Ads toAds(CreateAds createAds) {
+    public Ads toAds(CreateAds createAds) {
         Ads ads = new Ads();
         ads.setTitle(createAds.getTitle());
         ads.setPrice(createAds.getPrice());

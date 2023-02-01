@@ -7,7 +7,7 @@ import ru.skypro.homework.entity.User;
 @Component
 public class UserMapper {
 
-    public static UserDto toDto(User user) {
+    public UserDto toDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setCity(user.getCity());
         userDto.setId(user.getId());
@@ -20,7 +20,7 @@ public class UserMapper {
         return userDto;
     }
 
-    public static User toEntity(UserDto userDto, User user) {
+    public User toEntity(UserDto userDto, User user) {
         user.setCity(userDto.getCity());
         user.setEmail(userDto.getEmail());
         user.setPhone(userDto.getPhone());

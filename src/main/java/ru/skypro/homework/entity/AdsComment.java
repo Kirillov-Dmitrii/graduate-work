@@ -8,8 +8,8 @@ import javax.persistence.*;
 @Data
 @Table(name = "ads_comments")
 public class AdsComment {
-
-    private Integer author;
+    @ManyToOne
+    private User author;
 
     private String createdAt;
     @Id

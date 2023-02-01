@@ -22,7 +22,7 @@ import javax.validation.constraints.Null;
 @CrossOrigin(value = "http://localhost:3000")
 public class AdsController {
 
-    private AdsService adsService;
+    private final AdsService adsService;
 
     public AdsController(AdsService adsService) {
         this.adsService = adsService;
@@ -51,7 +51,7 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<AdsDto> addAds(@RequestBody CreateAds createAds, @RequestParam MultipartFile image) {
+    ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAds createAds, @RequestParam MultipartFile image) {
         if (createAds == null) {
             return ResponseEntity.notFound().build();
         }
@@ -74,12 +74,8 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/me")
-    ResponseEntity<ResponseWrapperAds> getAdsMe(@RequestParam(value = "authenticated", required = false) Boolean authenticated,
-                                                @RequestParam(value = "authorities[0].authority", required = false) String authorities0Authority,
-                                                @RequestParam(value = "credentials", required = false) Object credentials,
-                                                @RequestParam(value = "details", required = false) Object details,
-                                                @RequestParam(value = "principal", required = false) Object principal) {
-        ResponseWrapperAds responseWrapperAds = adsService.getAdsMe(authenticated, authorities0Authority, credentials, details, principal);
+    ResponseEntity<ResponseWrapperAds> getAdsMe() {
+        ResponseWrapperAds responseWrapperAds = adsService.getAdsMe();
         if (responseWrapperAds.getCount() == 0) {
             return ResponseEntity.notFound().build();
         }
@@ -94,8 +90,7 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/{ad_pk}/comments")
-    ResponseEntity<ResponseWrapperAdsComment> getAdsComments(@PathVariable String ad_pk) {
-        Integer adPk = Integer.getInteger(ad_pk);
+    ResponseEntity<ResponseWrapperAdsComment> getAdsComments(@PathVariable Integer adPk) {
         if (adPk < 0) {
             return ResponseEntity.badRequest().build();
         }
@@ -114,7 +109,7 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PostMapping("/{ad_pk}/comments")
-    ResponseEntity<AdsCommentDto> addComments(@PathVariable String ad_pk, @RequestBody AdsCommentDto adsCommentDto) {
+    ResponseEntity<AdsCommentDto> addComments(@PathVariable Integer adPk, @RequestBody AdsCommentDto adsCommentDto) {
         return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
@@ -185,7 +180,7 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/{ad_pk}/comments/{id}")
-    ResponseEntity<AdsCommentDto> getComments(@PathVariable("ad_pk") String ad_pk, @PathVariable("id") Integer id) {
+    ResponseEntity<AdsCommentDto> getComments(@PathVariable("adPk") String adPk, @PathVariable("id") Integer id) {
         return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
@@ -201,7 +196,7 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @DeleteMapping("/{ad_pk}/comments/{id}")
-    ResponseEntity<Void> deleteComments(@PathVariable("ad_pk") String ad_pk, @PathVariable("id") Integer id) {
+    ResponseEntity<Void> deleteComments(@PathVariable("adPk") Integer adPk, @PathVariable("id") Integer id) {
         return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
@@ -217,7 +212,7 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping("/{ad_pk}/comments/{id}")
-    ResponseEntity<AdsCommentDto> updateComments(@PathVariable("ad_pk") String ad_pk, @PathVariable("id") Integer id, @RequestBody AdsCommentDto adsCommentDtoBody) {
+    ResponseEntity<AdsCommentDto> updateComments(@PathVariable("adPk") Integer adPk, @PathVariable("id") Integer id, @RequestBody AdsCommentDto adsCommentDtoBody) {
         return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

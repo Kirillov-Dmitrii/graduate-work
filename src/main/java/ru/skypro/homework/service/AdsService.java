@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.Ads;
-import ru.skypro.homework.entity.User;
 import ru.skypro.homework.mappers.AdsMapper;
 import ru.skypro.homework.repository.AdsImageRepository;
 import ru.skypro.homework.repository.AdsRepository;
@@ -17,16 +16,20 @@ import java.util.stream.Collectors;
 @Service
 public class AdsService {
 
-    private AdsRepository adsRepository;
+    private final AdsRepository adsRepository;
 
-    private AdsImageRepository adsImageRepository;
+    private final AdsImageRepository adsImageRepository;
 
-    private UserService userService;
+    private final UserService userService;
 
-    public AdsService(AdsRepository adsRepository, AdsImageRepository adsImageRepository, UserService userService) {
+    private final AdsMapper adsMapper;
+
+    public AdsService(AdsRepository adsRepository, AdsImageRepository adsImageRepository,
+                      UserService userService, AdsMapper adsMapper) {
         this.adsRepository = adsRepository;
         this.adsImageRepository = adsImageRepository;
         this.userService = userService;
+        this.adsMapper = adsMapper;
     }
 
     public ResponseWrapperAds getAll() {
@@ -35,10 +38,10 @@ public class AdsService {
         if (!allAds.isEmpty()) {
             Collection<AdsDto> adsDtoCollection = Collections.emptyList();
             allAds.forEach(ads -> {
-                AdsDto adsDto = AdsMapper.toAdsDto(ads);
+                AdsDto adsDto = adsMapper.toAdsDto(ads);
                 adsDtoCollection.add(adsDto);
             });
-            responseWrapperAds = AdsMapper.toResponseWrapperAds(adsDtoCollection);
+            responseWrapperAds = adsMapper.toResponseWrapperAds(adsDtoCollection);
         } else {
             responseWrapperAds = new ResponseWrapperAds();
         }
@@ -46,22 +49,22 @@ public class AdsService {
     }
 
     public AdsDto add(CreateAds createAds, MultipartFile image) {
-        Ads ads = AdsMapper.toAds(createAds);
+        Ads ads = adsMapper.toAds(createAds);
         adsRepository.save(ads);
-        return AdsMapper.toAdsDto(ads);
+        return adsMapper.toAdsDto(ads);
     }
 
-    public ResponseWrapperAds getAdsMe(Boolean authenticated , String authorities0Authority, Object credentials, Object details, Object principal) {
+    public ResponseWrapperAds getAdsMe() {
         List<Ads> adsList = adsRepository.findAll();
         Collection<AdsDto> adsDtoCollection = Collections.emptyList();
         if (!adsList.isEmpty()) {
             adsList.forEach(ads -> {
                 AdsDto adsDto = new AdsDto();
-                AdsMapper.toAdsDto(ads);
+                adsMapper.toAdsDto(ads);
                 adsDtoCollection.add(adsDto);
             });
         }
-        return AdsMapper.toResponseWrapperAds(adsDtoCollection);
+        return adsMapper.toResponseWrapperAds(adsDtoCollection);
     }
 
     public FullAds get(Integer id) {
@@ -99,7 +102,7 @@ public class AdsService {
             ads.setPrice(createAds.getPrice());
             ads.setTitle(createAds.getTitle());
             adsRepository.save(ads);
-            return AdsMapper.toAdsDto(ads);
+            return adsMapper.toAdsDto(ads);
         }
         return null;
     }
