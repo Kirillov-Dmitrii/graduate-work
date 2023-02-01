@@ -7,15 +7,27 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
+import ru.skypro.homework.service.AdsService;
+
+import javax.validation.constraints.Null;
 
 @RestController
 @Tag(name = "Объявления", description = "Работа с объявлениями и комментариями")
 @RequestMapping("/ads")
 @CrossOrigin(value = "http://localhost:3000")
 public class AdsController {
+
+    private AdsService adsService;
+
+    public AdsController(AdsService adsService) {
+        this.adsService = adsService;
+    }
+
     @Operation(
             summary = "Получить все объявления",
             description = ""
@@ -24,7 +36,7 @@ public class AdsController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = ResponseWrapperAds.class))) })
     @GetMapping
     public ResponseEntity<ResponseWrapperAds> getAllAds() {
-        return new ResponseEntity<ResponseWrapperAds>(HttpStatus.NOT_IMPLEMENTED);
+        return ResponseEntity.ok(adsService.getAll());
     }
     @Operation(
             summary = "Создать новое объявление",
@@ -38,9 +50,16 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-    @PostMapping
-    ResponseEntity<AdsDto> addAds(@RequestBody CreateAds createAds) {
-        return new ResponseEntity<AdsDto>(HttpStatus.NOT_IMPLEMENTED);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<AdsDto> addAds(@RequestBody CreateAds createAds, @RequestParam MultipartFile image) {
+        if (createAds == null) {
+            return ResponseEntity.notFound().build();
+        }
+        AdsDto adsDto = adsService.add(createAds, image);
+        if (adsDto == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(adsDto);
     }
     @Operation(
             summary = "Получить объявления пользователя",
@@ -55,12 +74,16 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/me")
-    ResponseEntity<ResponseWrapperAds> getAdsMe(@RequestParam(value = "authenticated") Boolean authenticated,
-                                                @RequestParam(value = "authorities[0].authority") String authorities0Authority,
-                                                @RequestParam(value = "credentials") Object credentials,
-                                                @RequestParam(value = "details") Object details,
-                                                @RequestParam(value = "principal") Object principal) {
-        return new ResponseEntity<ResponseWrapperAds>(HttpStatus.NOT_IMPLEMENTED);
+    ResponseEntity<ResponseWrapperAds> getAdsMe(@RequestParam(value = "authenticated", required = false) Boolean authenticated,
+                                                @RequestParam(value = "authorities[0].authority", required = false) String authorities0Authority,
+                                                @RequestParam(value = "credentials", required = false) Object credentials,
+                                                @RequestParam(value = "details", required = false) Object details,
+                                                @RequestParam(value = "principal", required = false) Object principal) {
+        ResponseWrapperAds responseWrapperAds = adsService.getAdsMe(authenticated, authorities0Authority, credentials, details, principal);
+        if (responseWrapperAds.getCount() == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(responseWrapperAds);
     }
     @Operation(
             summary = "Посмотреть комментарии",
@@ -72,7 +95,10 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/{ad_pk}/comments")
     ResponseEntity<ResponseWrapperAdsComment> getAdsComments(@PathVariable String ad_pk) {
-        /* Не уловил тут смысл, почему ad_pk String, если в dto он Integer */
+        Integer adPk = Integer.getInteger(ad_pk);
+        if (adPk < 0) {
+            return ResponseEntity.badRequest().build();
+        }
         return new ResponseEntity<ResponseWrapperAdsComment>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
@@ -101,7 +127,11 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/{id}")
     ResponseEntity<FullAds> getFullAd(@PathVariable Integer id) {
-        return new ResponseEntity<FullAds>(HttpStatus.NOT_IMPLEMENTED);
+        FullAds fullAds = adsService.get(id);
+        if (fullAds == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(fullAds);
     }
     @Operation(
             summary = "Удалить объявление",
@@ -115,7 +145,13 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden") })
     @DeleteMapping("/{id}")
     ResponseEntity<Void> removeAds(@PathVariable Integer id) {
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        if (id < 0) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (!adsService.remove(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().build();
     }
     @Operation(
             summary = "Обновить объявление",
@@ -131,7 +167,14 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping("/{id}")
     ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAds adsBody) {
-        return new ResponseEntity<AdsDto>(HttpStatus.NOT_IMPLEMENTED);
+        if (id < 0) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        AdsDto adsDto = adsService.update(id, adsBody);
+        if (adsDto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(adsDto);
     }
     @Operation(
             summary = "Посмотреть комментарий",

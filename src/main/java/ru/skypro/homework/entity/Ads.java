@@ -1,10 +1,14 @@
 package ru.skypro.homework.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
+import java.util.List;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
+@Data
 @Table(name = "ads")
 public class Ads {
     @Id
@@ -14,12 +18,13 @@ public class Ads {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String image;
-
     private Integer price;
 
     private String description;
 
     private String title;
+
+    @OneToMany
+    private List<AdsImage> adsImage;
 
 }
