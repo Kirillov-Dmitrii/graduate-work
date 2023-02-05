@@ -6,6 +6,7 @@ import ru.skypro.homework.dto.CreateAds;
 import ru.skypro.homework.dto.ResponseWrapperAds;
 import ru.skypro.homework.entity.Ads;
 import ru.skypro.homework.entity.AdsImage;
+import ru.skypro.homework.entity.User;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +29,6 @@ public class AdsMapper {
         adsDto.setPk(ads.getPk());
         adsDto.setTitle(ads.getTitle());
         adsDto.setPrice(ads.getPrice());
-        adsDto.setImage(ads.getAdsImage().stream().map(e -> e.getImage()).collect(Collectors.toList()));
         return adsDto;
     }
 
@@ -38,13 +38,6 @@ public class AdsMapper {
         ads.setPk(adsDto.getPk());
         ads.setPrice(adsDto.getPrice());
         ads.getUser().setId(adsDto.getAuthor());
-        List<AdsImage> adsImage = Collections.emptyList();
-        adsDto.getImage().forEach(image -> {
-            AdsImage adsImage1 = new AdsImage();
-            adsImage1.setImage(image);
-            adsImage.add(adsImage1);
-        });
-        ads.setAdsImage(adsImage);
         return ads;
     }
 
@@ -55,6 +48,5 @@ public class AdsMapper {
         ads.setDescription(createAds.getDescription());
         return ads;
     }
-
 
 }

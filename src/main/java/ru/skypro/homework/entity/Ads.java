@@ -21,7 +21,4 @@ public class Ads {
     @ManyToOne
     private User user;
 
-    @OneToMany
-    private List<AdsImage> adsImage;
-
 }

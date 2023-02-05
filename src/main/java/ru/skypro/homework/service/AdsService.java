@@ -1,16 +1,22 @@
 package ru.skypro.homework.service;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.Ads;
+import ru.skypro.homework.entity.AdsImage;
+import ru.skypro.homework.entity.User;
 import ru.skypro.homework.mappers.AdsMapper;
+import ru.skypro.homework.mappers.UserMapper;
 import ru.skypro.homework.repository.AdsImageRepository;
 import ru.skypro.homework.repository.AdsRepository;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,21 +30,28 @@ public class AdsService {
 
     private final AdsMapper adsMapper;
 
+    private final UserMapper userMapper;
+
     public AdsService(AdsRepository adsRepository, AdsImageRepository adsImageRepository,
-                      UserService userService, AdsMapper adsMapper) {
+                      UserService userService, AdsMapper adsMapper,
+                      UserMapper userMapper) {
         this.adsRepository = adsRepository;
         this.adsImageRepository = adsImageRepository;
         this.userService = userService;
         this.adsMapper = adsMapper;
+        this.userMapper = userMapper;
     }
 
     public ResponseWrapperAds getAll() {
         List<Ads> allAds = adsRepository.findAll();
         ResponseWrapperAds responseWrapperAds;
         if (!allAds.isEmpty()) {
-            Collection<AdsDto> adsDtoCollection = Collections.emptyList();
+            Collection<AdsDto> adsDtoCollection = new LinkedList<>();
             allAds.forEach(ads -> {
+                List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
+                        stream().map(e -> e.getImage()).collect(Collectors.toList());
                 AdsDto adsDto = adsMapper.toAdsDto(ads);
+                adsDto.setImage(adsImages);
                 adsDtoCollection.add(adsDto);
             });
             responseWrapperAds = adsMapper.toResponseWrapperAds(adsDtoCollection);
@@ -49,18 +62,26 @@ public class AdsService {
     }
 
     public AdsDto add(CreateAds createAds, MultipartFile image) {
+        AdsImage adsImage = new AdsImage();
+        adsImage.setImage("https://natalyland.ru/wp-content/uploads/9/4/4/94410cfc083226e5834f006012e36736.jpeg");
+        User user = new User();
+        user.setId(1);
         Ads ads = adsMapper.toAds(createAds);
-        adsRepository.save(ads);
+        ads.setUser(user);
+        adsImage.setAds(adsRepository.save(ads));
+        adsImageRepository.save(adsImage);
         return adsMapper.toAdsDto(ads);
     }
 
     public ResponseWrapperAds getAdsMe() {
         List<Ads> adsList = adsRepository.findAll();
-        Collection<AdsDto> adsDtoCollection = Collections.emptyList();
+        Collection<AdsDto> adsDtoCollection = new LinkedList<>();
         if (!adsList.isEmpty()) {
             adsList.forEach(ads -> {
-                AdsDto adsDto = new AdsDto();
-                adsMapper.toAdsDto(ads);
+                List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
+                        stream().map(e -> e.getImage()).collect(Collectors.toList());
+                AdsDto adsDto = adsMapper.toAdsDto(ads);
+                adsDto.setImage(adsImages);
                 adsDtoCollection.add(adsDto);
             });
         }
@@ -71,9 +92,10 @@ public class AdsService {
         Ads ads = adsRepository.findById(id).orElse(null);
         UserDto userDto = userService.get();
         if (ads != null) {
+            List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk());
             FullAds fullAds = new FullAds();
             fullAds.setPk(ads.getPk());
-            fullAds.setImage(ads.getAdsImage().stream().map(e -> e.getImage()).collect(Collectors.toList()));
+            fullAds.setImage(adsImages.stream().map(e -> e.getImage()).collect(Collectors.toList()));
             fullAds.setEmail(userDto.getEmail());
             fullAds.setPhone(userDto.getPhone());
             fullAds.setDescription(ads.getDescription());

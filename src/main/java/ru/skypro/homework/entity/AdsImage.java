@@ -10,9 +10,11 @@ import javax.persistence.*;
 public class AdsImage {
     @Id
     @GeneratedValue(generator = "ads_image_generator")
-    private String id;
+    private Integer id;
 
     private String image;
+    @ManyToOne
+    private Ads ads;
 
 
 }

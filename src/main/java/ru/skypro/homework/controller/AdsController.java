@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.service.AdsService;
 
-import javax.validation.constraints.Null;
+import java.io.IOException;
 
 @RestController
 @Tag(name = "Объявления", description = "Работа с объявлениями и комментариями")
@@ -23,6 +25,8 @@ import javax.validation.constraints.Null;
 public class AdsController {
 
     private final AdsService adsService;
+
+    private final Logger logger = LoggerFactory.getLogger(AdsController.class);
 
     public AdsController(AdsService adsService) {
         this.adsService = adsService;
@@ -36,8 +40,10 @@ public class AdsController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = ResponseWrapperAds.class))) })
     @GetMapping
     public ResponseEntity<ResponseWrapperAds> getAllAds() {
+        logger.info("getAllAds");
         return ResponseEntity.ok(adsService.getAll());
     }
+
     @Operation(
             summary = "Создать новое объявление",
             description = ""
@@ -49,9 +55,10 @@ public class AdsController {
 
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
-            @ApiResponse(responseCode = "404", description = "Not Found") })
+            @ApiResponse(responseCode = "404", description = "Not Found")})
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAds createAds, @RequestParam MultipartFile image) {
+    ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAds createAds, @RequestParam MultipartFile image) throws IOException {
+        logger.info("addAds");
         if (createAds == null) {
             return ResponseEntity.notFound().build();
         }
@@ -75,6 +82,7 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/me")
     ResponseEntity<ResponseWrapperAds> getAdsMe() {
+        logger.info("getAdsMe");
         ResponseWrapperAds responseWrapperAds = adsService.getAdsMe();
         if (responseWrapperAds.getCount() == 0) {
             return ResponseEntity.notFound().build();
@@ -91,6 +99,7 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/{ad_pk}/comments")
     ResponseEntity<ResponseWrapperAdsComment> getAdsComments(@PathVariable Integer adPk) {
+        logger.info("getAdsComments");
         if (adPk < 0) {
             return ResponseEntity.badRequest().build();
         }
@@ -110,6 +119,7 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PostMapping("/{ad_pk}/comments")
     ResponseEntity<AdsCommentDto> addComments(@PathVariable Integer adPk, @RequestBody AdsCommentDto adsCommentDto) {
+        logger.info("addComments");
         return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
@@ -122,6 +132,7 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/{id}")
     ResponseEntity<FullAds> getFullAd(@PathVariable Integer id) {
+        logger.info("getFullAd");
         FullAds fullAds = adsService.get(id);
         if (fullAds == null) {
             return ResponseEntity.notFound().build();
@@ -140,6 +151,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden") })
     @DeleteMapping("/{id}")
     ResponseEntity<Void> removeAds(@PathVariable Integer id) {
+        logger.info("removeAds");
         if (id < 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -162,6 +174,7 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping("/{id}")
     ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAds adsBody) {
+        logger.info("updateAds");
         if (id < 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -181,6 +194,7 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/{ad_pk}/comments/{id}")
     ResponseEntity<AdsCommentDto> getComments(@PathVariable("adPk") String adPk, @PathVariable("id") Integer id) {
+        logger.info("getComments");
         return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Operation(
@@ -197,8 +211,10 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @DeleteMapping("/{ad_pk}/comments/{id}")
     ResponseEntity<Void> deleteComments(@PathVariable("adPk") Integer adPk, @PathVariable("id") Integer id) {
+        logger.info("deleteComments");
         return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
+
     @Operation(
             summary = "Обновить комментарий",
             description = "Позволяет редактировать комментарий"
@@ -210,9 +226,10 @@ public class AdsController {
 
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
-            @ApiResponse(responseCode = "404", description = "Not Found") })
+            @ApiResponse(responseCode = "404", description = "Not Found")})
     @PatchMapping("/{ad_pk}/comments/{id}")
     ResponseEntity<AdsCommentDto> updateComments(@PathVariable("adPk") Integer adPk, @PathVariable("id") Integer id, @RequestBody AdsCommentDto adsCommentDtoBody) {
+        logger.info("updateComments");
         return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

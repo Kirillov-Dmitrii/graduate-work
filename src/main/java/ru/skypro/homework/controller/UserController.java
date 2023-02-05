@@ -45,7 +45,7 @@ public class UserController {
         if (userDto != null) {
             return ResponseEntity.ok(userDto);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
     @Operation(
