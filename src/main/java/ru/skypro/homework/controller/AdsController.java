@@ -59,8 +59,8 @@ public class AdsController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAds createAds, @RequestParam MultipartFile image) throws IOException {
         logger.info("addAds");
-        if (createAds == null) {
-            return ResponseEntity.notFound().build();
+        if (createAds.getDescription() == null || createAds.getTitle() == null || createAds.getPrice() == null) {
+            return ResponseEntity.badRequest().build();
         }
         AdsDto adsDto = adsService.add(createAds, image);
         if (adsDto == null) {
@@ -84,9 +84,6 @@ public class AdsController {
     ResponseEntity<ResponseWrapperAds> getAdsMe() {
         logger.info("getAdsMe");
         ResponseWrapperAds responseWrapperAds = adsService.getAdsMe();
-        if (responseWrapperAds.getCount() == 0) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(responseWrapperAds);
     }
     @Operation(

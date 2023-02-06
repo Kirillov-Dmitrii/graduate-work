@@ -3,16 +3,20 @@ package ru.skypro.homework.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 
 @Entity
 @Table(name = "ads_images")
 @Data
 public class AdsImage {
     @Id
-    @GeneratedValue(generator = "ads_image_generator")
-    private Integer id;
+    private String id;
 
-    private String image;
+    private Long fileSize;
+
+    private String mediaType;
+
+    private byte[] data;
     @ManyToOne
     private Ads ads;
 

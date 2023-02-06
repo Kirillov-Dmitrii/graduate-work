@@ -12,11 +12,8 @@ import ru.skypro.homework.mappers.UserMapper;
 import ru.skypro.homework.repository.AdsImageRepository;
 import ru.skypro.homework.repository.AdsRepository;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Logger;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +46,7 @@ public class AdsService {
             Collection<AdsDto> adsDtoCollection = new LinkedList<>();
             allAds.forEach(ads -> {
                 List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
-                        stream().map(e -> e.getImage()).collect(Collectors.toList());
+                        stream().map(e -> e.getId()).collect(Collectors.toList());
                 AdsDto adsDto = adsMapper.toAdsDto(ads);
                 adsDto.setImage(adsImages);
                 adsDtoCollection.add(adsDto);
@@ -63,7 +60,14 @@ public class AdsService {
 
     public AdsDto add(CreateAds createAds, MultipartFile image) {
         AdsImage adsImage = new AdsImage();
-        adsImage.setImage("https://natalyland.ru/wp-content/uploads/9/4/4/94410cfc083226e5834f006012e36736.jpeg");
+        try {
+            adsImage.setData(image.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        adsImage.setFileSize(image.getSize());
+        adsImage.setMediaType(image.getOriginalFilename().substring(image.getOriginalFilename().indexOf(".") + 1));
+        adsImage.setId(UUID.randomUUID().toString());
         User user = new User();
         user.setId(1);
         Ads ads = adsMapper.toAds(createAds);
@@ -79,7 +83,7 @@ public class AdsService {
         if (!adsList.isEmpty()) {
             adsList.forEach(ads -> {
                 List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
-                        stream().map(e -> e.getImage()).collect(Collectors.toList());
+                        stream().map(e -> e.getId()).collect(Collectors.toList());
                 AdsDto adsDto = adsMapper.toAdsDto(ads);
                 adsDto.setImage(adsImages);
                 adsDtoCollection.add(adsDto);
@@ -95,7 +99,7 @@ public class AdsService {
             List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk());
             FullAds fullAds = new FullAds();
             fullAds.setPk(ads.getPk());
-            fullAds.setImage(adsImages.stream().map(e -> e.getImage()).collect(Collectors.toList()));
+            fullAds.setImage(adsImages.stream().map(e -> e.getId()).collect(Collectors.toList()));
             fullAds.setEmail(userDto.getEmail());
             fullAds.setPhone(userDto.getPhone());
             fullAds.setDescription(ads.getDescription());
