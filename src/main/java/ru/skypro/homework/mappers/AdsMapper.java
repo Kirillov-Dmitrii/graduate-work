@@ -28,7 +28,7 @@ public class AdsMapper {
         adsDto.setPk(ads.getPk());
         adsDto.setTitle(ads.getTitle());
         adsDto.setPrice(ads.getPrice());
-        adsDto.setImage(ads.getAdsImage().stream().map(e -> e.getImage()).collect(Collectors.toList()));
+        adsDto.setImage(ads.getAdsImage().stream().map(e -> e.getFilePath()).collect(Collectors.toList()));
         return adsDto;
     }
 
@@ -41,7 +41,7 @@ public class AdsMapper {
         List<AdsImage> adsImage = Collections.emptyList();
         adsDto.getImage().forEach(image -> {
             AdsImage adsImage1 = new AdsImage();
-            adsImage1.setImage(image);
+            adsImage1.setFilePath(image);
             adsImage.add(adsImage1);
         });
         ads.setAdsImage(adsImage);

@@ -70,7 +70,7 @@ public class AdsService {
         if (ads != null) {
             FullAds fullAds = new FullAds();
             fullAds.setPk(ads.getPk());
-            fullAds.setImage(ads.getAdsImage().stream().map(e -> e.getImage()).collect(Collectors.toList()));
+            fullAds.setImage(ads.getAdsImage().stream().map(e -> e.getId()).collect(Collectors.toList()));
             fullAds.setEmail(userDto.getEmail());
             fullAds.setPhone(userDto.getPhone());
             fullAds.setDescription(ads.getDescription());

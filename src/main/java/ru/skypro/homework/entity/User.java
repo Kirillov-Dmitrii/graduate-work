@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import ru.skypro.homework.dto.Role;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Collection;
@@ -15,7 +15,7 @@ import java.util.Collection;
 @Data
 @Table(name = "users")
 public class User implements UserDetails {
-
+    private Integer id;
     private String email;
 
     private String firstName;
@@ -61,6 +61,8 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return false;
     }
+
+    @Id
     public Integer getId() {
         return id;
     }

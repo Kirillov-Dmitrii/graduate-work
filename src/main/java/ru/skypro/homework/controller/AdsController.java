@@ -53,7 +53,7 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<AdsDto> addAds(@RequestBody CreateAds createAds, @RequestParam MultipartFile image) {
-        if (createAds == null) {
+        if (createAds.getPrice() == null || createAds.getDescription() == null || createAds.getTitle() == null) {
             return ResponseEntity.notFound().build();
         }
         AdsDto adsDto = adsService.add(createAds, image);
@@ -82,9 +82,7 @@ public class AdsController {
                                                 @RequestParam(value = "details", required = false) Object details,
                                                 @RequestParam(value = "principal", required = false) Object principal) {
         ResponseWrapperAds responseWrapperAds = adsService.getAdsMe(authenticated, authorities0Authority, credentials, details, principal);
-        if (responseWrapperAds.getCount() == 0) {
-            return ResponseEntity.notFound().build();
-        }
+
         return ResponseEntity.ok(responseWrapperAds);
     }
 

@@ -45,6 +45,24 @@ ALTER TABLE ads_comments ADD COLUMN ads_id SERIAL;
 -- ALTER TABLE ads_comments ADD FOREIGN KEY (user_id) REFERENCES users(id);
 ALTER TABLE ads_comments ADD FOREIGN KEY (ads_id) REFERENCES ads(pk);
 
+--changeset dkirillov:6
+CREATE TABLE ads_image
+(
+    id SERIAL not null primary key,
+    data bytea not null,
+    file_path VARCHAR(255),
+    file_size BIGINT not null,
+    media_type VARCHAR (255)
+)
+
+--changeset dkirillov:7
+ALTER TABLE ads_image ADD COLUMN ads_id SERIAL;
+ALTER TABLE ads_image ADD FOREIGN KEY (ads_id) REFERENCES ads(pk);
+
+
+
+
+
 
 
 

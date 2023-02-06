@@ -29,6 +29,7 @@ public class ImageController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
     ResponseEntity<Collection<byte[]>> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) {
         return new ResponseEntity<Collection<byte[]>>(HttpStatus.NOT_IMPLEMENTED);
     }

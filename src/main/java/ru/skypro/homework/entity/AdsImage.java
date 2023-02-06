@@ -12,7 +12,11 @@ public class AdsImage {
     @GeneratedValue(generator = "ads_image_generator")
     private String id;
 
-    private String image;
+    private String filePath;
+    private Long fileSize;
+    private String mediaType;
+    private byte[] data;
 
-
+    @OneToOne
+    private Ads ads;
 }
