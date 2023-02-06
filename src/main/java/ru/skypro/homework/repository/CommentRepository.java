@@ -6,4 +6,5 @@ import ru.skypro.homework.entity.AdsComment;
 
 @Repository
 public interface CommentRepository extends JpaRepository<AdsComment, Integer> {
+    
 }

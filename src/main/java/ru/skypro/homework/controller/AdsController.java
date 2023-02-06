@@ -38,6 +38,7 @@ public class AdsController {
     public ResponseEntity<ResponseWrapperAds> getAllAds() {
         return ResponseEntity.ok(adsService.getAll());
     }
+
     @Operation(
             summary = "Создать новое объявление",
             description = ""
@@ -61,6 +62,7 @@ public class AdsController {
         }
         return ResponseEntity.ok(adsDto);
     }
+
     @Operation(
             summary = "Получить объявления пользователя",
             description = "Позволяет получить все объявления, которые создал пользователь"
@@ -85,6 +87,7 @@ public class AdsController {
         }
         return ResponseEntity.ok(responseWrapperAds);
     }
+
     @Operation(
             summary = "Посмотреть комментарии",
             description = "Получает все комментарии, которые оставили под объявлением"
@@ -117,6 +120,7 @@ public class AdsController {
     ResponseEntity<AdsCommentDto> addComments(@PathVariable String ad_pk, @RequestBody AdsCommentDto adsCommentDto) {
         return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
+
     @Operation(
             summary = "Получить объявление",
             description = "Получает объявление со всеми данными о пользователе"
@@ -165,6 +169,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+
     @PatchMapping("/{id}")
     ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAds adsBody) {
         if (id < 0) {
@@ -188,6 +193,7 @@ public class AdsController {
     ResponseEntity<AdsCommentDto> getComments(@PathVariable("ad_pk") String ad_pk, @PathVariable("id") Integer id) {
         return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
+
     @Operation(
             summary = "Удалить комментарий",
             description = "Удаляет комментарий по его id"
@@ -204,6 +210,7 @@ public class AdsController {
     ResponseEntity<Void> deleteComments(@PathVariable("ad_pk") String ad_pk, @PathVariable("id") Integer id) {
         return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
+
     @Operation(
             summary = "Обновить комментарий",
             description = "Позволяет редактировать комментарий"
@@ -216,6 +223,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+    
     @PatchMapping("/{ad_pk}/comments/{id}")
     ResponseEntity<AdsCommentDto> updateComments(@PathVariable("ad_pk") String ad_pk, @PathVariable("id") Integer id, @RequestBody AdsCommentDto adsCommentDtoBody) {
         return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
