@@ -67,7 +67,7 @@ public class AdsService {
         }
         adsImage.setFileSize(image.getSize());
         adsImage.setMediaType(image.getOriginalFilename().substring(image.getOriginalFilename().indexOf(".") + 1));
-        adsImage.setId(UUID.randomUUID().toString());
+        //adsImage.setId(UUID.randomUUID().toString());
         User user = new User();
         user.setId(1);
         Ads ads = adsMapper.toAds(createAds);

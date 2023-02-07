@@ -26,7 +26,7 @@ public class AdsMapper {
     public AdsDto toAdsDto(Ads ads) {
         AdsDto adsDto = new AdsDto();
         adsDto.setAuthor(ads.getUser().getId());
-        adsDto.setPk(ads.getPk());
+        //adsDto.setPk(ads.getPk());
         adsDto.setTitle(ads.getTitle());
         adsDto.setPrice(ads.getPrice());
         return adsDto;
@@ -35,7 +35,7 @@ public class AdsMapper {
     public Ads toAds(AdsDto adsDto) {
         Ads ads = new Ads();
         ads.setTitle(adsDto.getTitle());
-        ads.setPk(adsDto.getPk());
+        //ads.setPk(adsDto.getPk());
         ads.setPrice(adsDto.getPrice());
         ads.getUser().setId(adsDto.getAuthor());
         return ads;

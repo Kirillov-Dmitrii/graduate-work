@@ -1,6 +1,7 @@
 package ru.skypro.homework.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -8,8 +9,8 @@ import javax.persistence.*;
 @Table(name = "ads_images")
 @Data
 public class AdsImage {
-    @Id
-    @GeneratedValue(generator = "ads_image_generator")
+    @Id @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
     private String id;
 
     private String filePath;

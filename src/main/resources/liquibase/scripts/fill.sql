@@ -3,7 +3,7 @@
 --changeset dkirillov:1
 CREATE TABLE users
 (
-    id SERIAL not null primary key,
+    id SERIAL primary key,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     email VARCHAR(50),
@@ -19,7 +19,7 @@ CREATE TABLE users
 --changeset dkirillov:2
 CREATE TABLE ads
 (
-    pk  SERIAL not null primary key,
+    pk  SERIAL primary key,
     image VARCHAR(255),
     price INTEGER,
     description VARCHAR(255),
@@ -29,7 +29,7 @@ CREATE TABLE ads
 --changeset dkirillov:3
 CREATE TABLE ads_comments
 (
-    pk SERIAL not null primary key,
+    pk SERIAL primary key,
     created_at VARCHAR(255),
     text VARCHAR(255),
     author INTEGER
@@ -48,7 +48,7 @@ ALTER TABLE ads_comments ADD FOREIGN KEY (ads_id) REFERENCES ads(pk);
 --changeset dkirillov:6
 CREATE TABLE ads_image
 (
-    id SERIAL not null primary key,
+    id VARCHAR(255) primary key,
     data bytea not null,
     file_path VARCHAR(255),
     file_size BIGINT not null,

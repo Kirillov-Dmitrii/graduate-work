@@ -12,6 +12,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
 @Table(name = "ads")
 public class Ads {
     @Id
+    @GeneratedValue
     private Integer pk;
 
     @ManyToOne
