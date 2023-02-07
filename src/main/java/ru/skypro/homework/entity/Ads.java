@@ -24,7 +24,4 @@ public class Ads {
 
     private String title;
 
-    @OneToMany
-    private List<AdsImage> adsImage;
-
 }

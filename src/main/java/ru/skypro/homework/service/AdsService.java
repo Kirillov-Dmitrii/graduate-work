@@ -1,44 +1,57 @@
 package ru.skypro.homework.service;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.Ads;
+import ru.skypro.homework.entity.AdsImage;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.mappers.AdsMapper;
+import ru.skypro.homework.mappers.UserMapper;
 import ru.skypro.homework.repository.AdsImageRepository;
 import ru.skypro.homework.repository.AdsRepository;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class AdsService {
 
-    private AdsRepository adsRepository;
+    private final AdsRepository adsRepository;
 
-    private AdsImageRepository adsImageRepository;
+    private final AdsImageRepository adsImageRepository;
 
-    private UserService userService;
+    private final UserService userService;
 
-    public AdsService(AdsRepository adsRepository, AdsImageRepository adsImageRepository, UserService userService) {
+    private final AdsMapper adsMapper;
+
+    private final UserMapper userMapper;
+
+    public AdsService(AdsRepository adsRepository, AdsImageRepository adsImageRepository,
+                      UserService userService, AdsMapper adsMapper,
+                      UserMapper userMapper) {
         this.adsRepository = adsRepository;
         this.adsImageRepository = adsImageRepository;
         this.userService = userService;
+        this.adsMapper = adsMapper;
+        this.userMapper = userMapper;
     }
 
     public ResponseWrapperAds getAll() {
         List<Ads> allAds = adsRepository.findAll();
         ResponseWrapperAds responseWrapperAds;
         if (!allAds.isEmpty()) {
-            Collection<AdsDto> adsDtoCollection = Collections.emptyList();
+            Collection<AdsDto> adsDtoCollection = new LinkedList<>();
             allAds.forEach(ads -> {
-                AdsDto adsDto = AdsMapper.toAdsDto(ads);
+                List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
+                        stream().map(e -> e.getId()).collect(Collectors.toList());
+                AdsDto adsDto = adsMapper.toAdsDto(ads);
+                adsDto.setImage(adsImages);
                 adsDtoCollection.add(adsDto);
             });
-            responseWrapperAds = AdsMapper.toResponseWrapperAds(adsDtoCollection);
+            responseWrapperAds = adsMapper.toResponseWrapperAds(adsDtoCollection);
         } else {
             responseWrapperAds = new ResponseWrapperAds();
         }
@@ -46,31 +59,47 @@ public class AdsService {
     }
 
     public AdsDto add(CreateAds createAds, MultipartFile image) {
-        Ads ads = AdsMapper.toAds(createAds);
-        adsRepository.save(ads);
-        return AdsMapper.toAdsDto(ads);
+        AdsImage adsImage = new AdsImage();
+        try {
+            adsImage.setData(image.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        adsImage.setFileSize(image.getSize());
+        adsImage.setMediaType(image.getOriginalFilename().substring(image.getOriginalFilename().indexOf(".") + 1));
+        adsImage.setId(UUID.randomUUID().toString());
+        User user = new User();
+        user.setId(1);
+        Ads ads = adsMapper.toAds(createAds);
+        ads.setUser(user);
+        adsImage.setAds(adsRepository.save(ads));
+        adsImageRepository.save(adsImage);
+        return adsMapper.toAdsDto(ads);
     }
 
-    public ResponseWrapperAds getAdsMe(Boolean authenticated , String authorities0Authority, Object credentials, Object details, Object principal) {
+    public ResponseWrapperAds getAdsMe() {
         List<Ads> adsList = adsRepository.findAll();
-        Collection<AdsDto> adsDtoCollection = Collections.emptyList();
+        Collection<AdsDto> adsDtoCollection = new LinkedList<>();
         if (!adsList.isEmpty()) {
             adsList.forEach(ads -> {
-                AdsDto adsDto = new AdsDto();
-                AdsMapper.toAdsDto(ads);
+                List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
+                        stream().map(e -> e.getId()).collect(Collectors.toList());
+                AdsDto adsDto = adsMapper.toAdsDto(ads);
+                adsDto.setImage(adsImages);
                 adsDtoCollection.add(adsDto);
             });
         }
-        return AdsMapper.toResponseWrapperAds(adsDtoCollection);
+        return adsMapper.toResponseWrapperAds(adsDtoCollection);
     }
 
     public FullAds get(Integer id) {
         Ads ads = adsRepository.findById(id).orElse(null);
         UserDto userDto = userService.get();
         if (ads != null) {
+            List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk());
             FullAds fullAds = new FullAds();
             fullAds.setPk(ads.getPk());
-            fullAds.setImage(ads.getAdsImage().stream().map(e -> e.getId()).collect(Collectors.toList()));
+            fullAds.setImage(adsImages.stream().map(e -> e.getId()).collect(Collectors.toList()));
             fullAds.setEmail(userDto.getEmail());
             fullAds.setPhone(userDto.getPhone());
             fullAds.setDescription(ads.getDescription());
@@ -99,7 +128,7 @@ public class AdsService {
             ads.setPrice(createAds.getPrice());
             ads.setTitle(createAds.getTitle());
             adsRepository.save(ads);
-            return AdsMapper.toAdsDto(ads);
+            return adsMapper.toAdsDto(ads);
         }
         return null;
     }

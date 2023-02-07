@@ -74,18 +74,27 @@ Authorization: Basic userDto password
   "currentPassword": "password1"
 }
 
-###
+
+
+### Send a form with the text and file fields
 POST http://localhost:8080/ads
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="properties"
 Content-Type: application/json
-Authorization: Basic userDto password
 
 {
-  "image": "123",
-  "price": 123,
-  "description": "123",
-  "pk": 1233,
-  "title": "123"
+  "price" : 12,
+  "description" : "test",
+  "title" : "test"
 }
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="test.png"
+Content-Type: application/octet-stream
+
+< ./test.png
+--WebAppBoundary--
 
 ###
 GET http://localhost:8080/ads
