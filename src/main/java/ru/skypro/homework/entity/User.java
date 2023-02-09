@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import ru.skypro.homework.dto.Role;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Collection;
@@ -15,13 +15,11 @@ import java.util.Collection;
 @Data
 @Table(name = "users")
 public class User implements UserDetails {
-
+    @Id
+    private Integer id;
     private String email;
 
     private String firstName;
-    @Id
-    @GeneratedValue(generator = "user_generator")
-    private Integer id;
 
     private String lastName;
 

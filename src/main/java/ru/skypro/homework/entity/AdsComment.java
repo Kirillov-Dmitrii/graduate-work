@@ -8,16 +8,18 @@ import javax.persistence.*;
 @Data
 @Table(name = "ads_comments")
 public class AdsComment {
-    @ManyToOne
-    private User author;
 
-    private String createdAt;
     @Id
-    @GeneratedValue(generator = "comment_generator")
     private Integer pk;
 
-    private String text;
     @ManyToOne
+    @JoinColumn(name = "ads_id")
     private Ads ads;
+
+    private Integer author;
+
+    private String createdAt;
+
+    private String text;
 
 }

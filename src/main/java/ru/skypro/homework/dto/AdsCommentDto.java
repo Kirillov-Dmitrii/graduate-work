@@ -13,5 +13,4 @@ public class AdsCommentDto {
     private Integer pk;
 
     private String text;
-
 }

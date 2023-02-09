@@ -4,7 +4,6 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
 
 @Entity
 @Table(name = "ads_images")
@@ -14,13 +13,11 @@ public class AdsImage {
     @GenericGenerator(name="system-uuid", strategy = "uuid")
     private String id;
 
+    private String filePath;
     private Long fileSize;
-
     private String mediaType;
-    @Lob
     private byte[] data;
+
     @ManyToOne
     private Ads ads;
-
-
 }

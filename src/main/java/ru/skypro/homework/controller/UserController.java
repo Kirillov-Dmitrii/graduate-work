@@ -39,14 +39,13 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+
     @GetMapping("/me")
     public ResponseEntity<UserDto> getUser() {
         UserDto userDto = userService.get();
-        if (userDto != null) {
+
             return ResponseEntity.ok(userDto);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+
     }
     @Operation(
             summary = "Установить пароль",

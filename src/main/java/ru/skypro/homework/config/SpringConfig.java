@@ -1,4 +1,4 @@
-package ru.skypro.homework.config;
+/*package ru.skypro.homework.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -12,4 +12,4 @@ public class SpringConfig {
         return new ModelMapper();
     }
 
-}
+}*/
