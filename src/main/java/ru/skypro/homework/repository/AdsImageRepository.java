@@ -7,6 +7,6 @@ import ru.skypro.homework.entity.AdsImage;
 import java.util.List;
 
 @Repository
-public interface AdsImageRepository extends JpaRepository<AdsImage, Integer> {
+public interface AdsImageRepository extends JpaRepository<AdsImage, String> {
     List<AdsImage> findAdsImagesByAds_Pk(Integer adsPk);
 }

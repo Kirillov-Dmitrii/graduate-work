@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.service.AdsImageService;
 
 import java.util.Collection;
 
@@ -20,6 +21,13 @@ import java.util.Collection;
 @RequestMapping("/image")
 @CrossOrigin(value = "http://localhost:3000")
 public class ImageController {
+
+    private final AdsImageService adsImageService;
+
+    public ImageController(AdsImageService adsImageService) {
+        this.adsImageService = adsImageService;
+    }
+
     @Operation(
             summary = "Получить фотографию",
             description = ""
@@ -29,7 +37,12 @@ public class ImageController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<Collection<byte[]>> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) {
-        return new ResponseEntity<Collection<byte[]>>(HttpStatus.NOT_IMPLEMENTED);
+    ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) {
+        return new ResponseEntity<byte[]>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @GetMapping(value = "/{id}/", produces = {MediaType.IMAGE_PNG_VALUE})
+    public byte[] getImage(String id) {
+        return adsImageService.get(id);
     }
 }
