@@ -46,7 +46,11 @@ public class AdsService {
             Collection<AdsDto> adsDtoCollection = new LinkedList<>();
             allAds.forEach(ads -> {
                 List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
-                        stream().map(e -> e.getId()).collect(Collectors.toList());
+                        stream().
+                        map(e -> e.getId()).
+                        map(e -> "http://localhost:3000/image/" + e).
+                        //map(e -> Base64.getUrlEncoder().encodeToString(e.getBytes())).
+                        collect(Collectors.toList());
                 AdsDto adsDto = adsMapper.toAdsDto(ads);
                 adsDto.setImage(adsImages);
                 adsDtoCollection.add(adsDto);
@@ -67,7 +71,6 @@ public class AdsService {
         }
         adsImage.setFileSize(image.getSize());
         adsImage.setMediaType(image.getOriginalFilename().substring(image.getOriginalFilename().indexOf(".") + 1));
-        //adsImage.setId(UUID.randomUUID().toString());
         User user = new User();
         user.setId(1);
         Ads ads = adsMapper.toAds(createAds);
@@ -83,7 +86,10 @@ public class AdsService {
         if (!adsList.isEmpty()) {
             adsList.forEach(ads -> {
                 List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
-                        stream().map(e -> e.getId()).collect(Collectors.toList());
+                        stream().map(e -> e.getId())
+                        .map(e -> "http://localhost:3000/image/" + e)
+                        //.map(e -> Base64.getUrlEncoder().encodeToString(e.getBytes()))
+                        .collect(Collectors.toList());
                 AdsDto adsDto = adsMapper.toAdsDto(ads);
                 adsDto.setImage(adsImages);
                 adsDtoCollection.add(adsDto);
@@ -99,7 +105,7 @@ public class AdsService {
             List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk());
             FullAds fullAds = new FullAds();
             fullAds.setPk(ads.getPk());
-            fullAds.setImage(adsImages.stream().map(e -> e.getId()).collect(Collectors.toList()));
+            fullAds.setImage(adsImages.stream().map(e -> e.getId()).map(e -> "/image/" + e).collect(Collectors.toList()));
             fullAds.setEmail(userDto.getEmail());
             fullAds.setPhone(userDto.getPhone());
             fullAds.setDescription(ads.getDescription());

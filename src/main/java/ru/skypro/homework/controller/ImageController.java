@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,8 @@ public class ImageController {
 
     private final AdsImageService adsImageService;
 
+    private final Logger logger = LoggerFactory.getLogger(AdsController.class);
+
     public ImageController(AdsImageService adsImageService) {
         this.adsImageService = adsImageService;
     }
@@ -38,11 +42,12 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) {
+        logger.info("updateImage");
         return new ResponseEntity<byte[]>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @GetMapping(value = "/{id}/", produces = {MediaType.IMAGE_PNG_VALUE})
-    public byte[] getImage(String id) {
+    public byte[] getImage(@PathVariable String id) {
         return adsImageService.get(id);
     }
 }
