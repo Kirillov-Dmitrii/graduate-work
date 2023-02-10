@@ -2,6 +2,7 @@ package ru.skypro.homework.service;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.Ads;
@@ -38,7 +39,7 @@ public class AdsService {
         this.adsMapper = adsMapper;
         this.userMapper = userMapper;
     }
-
+    @Transactional
     public ResponseWrapperAds getAll() {
         List<Ads> allAds = adsRepository.findAll();
         ResponseWrapperAds responseWrapperAds;
@@ -48,8 +49,7 @@ public class AdsService {
                 List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
                         stream().
                         map(e -> e.getId()).
-                        map(e -> "http://localhost:3000/image/" + e).
-                        //map(e -> Base64.getUrlEncoder().encodeToString(e.getBytes())).
+                        map(e -> "/image/" + e).
                         collect(Collectors.toList());
                 AdsDto adsDto = adsMapper.toAdsDto(ads);
                 adsDto.setImage(adsImages);
@@ -79,7 +79,7 @@ public class AdsService {
         adsImageRepository.save(adsImage);
         return adsMapper.toAdsDto(ads);
     }
-
+    @Transactional
     public ResponseWrapperAds getAdsMe() {
         List<Ads> adsList = adsRepository.findAll();
         Collection<AdsDto> adsDtoCollection = new LinkedList<>();
@@ -87,8 +87,7 @@ public class AdsService {
             adsList.forEach(ads -> {
                 List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
                         stream().map(e -> e.getId())
-                        .map(e -> "http://localhost:3000/image/" + e)
-                        //.map(e -> Base64.getUrlEncoder().encodeToString(e.getBytes()))
+                        .map(e -> "/image/" + e)
                         .collect(Collectors.toList());
                 AdsDto adsDto = adsMapper.toAdsDto(ads);
                 adsDto.setImage(adsImages);
@@ -97,7 +96,7 @@ public class AdsService {
         }
         return adsMapper.toResponseWrapperAds(adsDtoCollection);
     }
-
+    @Transactional
     public FullAds get(Integer id) {
         Ads ads = adsRepository.findById(id).orElse(null);
         UserDto userDto = userService.get();
@@ -105,7 +104,8 @@ public class AdsService {
             List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk());
             FullAds fullAds = new FullAds();
             fullAds.setPk(ads.getPk());
-            fullAds.setImage(adsImages.stream().map(e -> e.getId()).map(e -> "/image/" + e).collect(Collectors.toList()));
+            fullAds.setImage(adsImages.stream().map(e -> e.getId())
+                    .map(e -> "/image/" + e).collect(Collectors.toList()));
             fullAds.setEmail(userDto.getEmail());
             fullAds.setPhone(userDto.getPhone());
             fullAds.setDescription(ads.getDescription());

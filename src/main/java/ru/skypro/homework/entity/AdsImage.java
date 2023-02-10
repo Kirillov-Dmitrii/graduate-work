@@ -16,6 +16,7 @@ public class AdsImage {
     private String filePath;
     private Long fileSize;
     private String mediaType;
+    @Lob
     private byte[] data;
 
     @ManyToOne

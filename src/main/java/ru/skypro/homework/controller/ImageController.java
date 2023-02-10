@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.service.AdsImageService;
@@ -45,7 +46,7 @@ public class ImageController {
         logger.info("updateImage");
         return new ResponseEntity<byte[]>(HttpStatus.NOT_IMPLEMENTED);
     }
-
+    @Transactional
     @GetMapping(value = "/{id}/", produces = {MediaType.IMAGE_PNG_VALUE})
     public byte[] getImage(@PathVariable String id) {
         return adsImageService.get(id);

@@ -15,7 +15,7 @@ public class AdsImageService {
         if (adsImageRepository.existsById(id)) {
             return adsImageRepository.findById(id).get().getData();
         }
-        return null;
+        return new byte[0];
     }
 
 }
