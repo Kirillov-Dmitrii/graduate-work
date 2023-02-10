@@ -47,7 +47,7 @@ public class ImageController {
         return new ResponseEntity<byte[]>(HttpStatus.NOT_IMPLEMENTED);
     }
     @Transactional
-    @GetMapping(value = "/{id}/", produces = {MediaType.IMAGE_PNG_VALUE})
+    @GetMapping(value = "/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
     public byte[] getImage(@PathVariable String id) {
         return adsImageService.get(id);
     }
