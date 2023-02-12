@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,8 @@ import ru.skypro.homework.service.UserService;
 public class UserController {
 
     private final UserService userService;
+
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -87,15 +91,35 @@ public class UserController {
         }
     }
     @Operation(
-            summary = "Показать аватарку",
-            description = "Получить изображение пользователя"
+            summary = "Обновить аватарку",
+            description = "Обновить изображение пользователя"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateUserImage(@RequestParam MultipartFile image) {
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity updateUserImage(@RequestParam MultipartFile image) {
+        userService.updateImage(image);
+        return ResponseEntity.ok().build();
     }
+
+    @Operation(
+            summary = "Получить аватарку",
+            description = "Получить изображение пользователя"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+
+            @ApiResponse(responseCode = "404", description = "Not Found")})
+    @GetMapping(value = "/me/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
+    ResponseEntity<byte[]> getUserImage(String id) {
+        byte[] data = userService.getImage(id);
+        if (data[0] == 0) {
+            logger.info("data = 0");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(data);
+    }
+
 }
