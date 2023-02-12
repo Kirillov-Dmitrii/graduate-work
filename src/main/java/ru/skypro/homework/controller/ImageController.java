@@ -34,7 +34,7 @@ public class ImageController {
     }
 
     @Operation(
-            summary = "Получить фотографию",
+            summary = "Обновить фотографию",
             description = ""
     )
     @ApiResponses(value = {
@@ -42,13 +42,28 @@ public class ImageController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) {
+    ResponseEntity<byte[]> updateImage(@PathVariable String id, @RequestParam MultipartFile image) {
         logger.info("updateImage");
-        return new ResponseEntity<byte[]>(HttpStatus.NOT_IMPLEMENTED);
+        byte[] data = adsImageService.update(id, image);
+        if (data[0] == 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(data);
     }
-    @Transactional
+    @Operation(
+            summary = "Получить фотографию",
+            description = ""
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/octet-stream", array = @ArraySchema(schema = @Schema(implementation = byte[].class)))),
+
+            @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping(value = "/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
-    public byte[] getImage(@PathVariable String id) {
-        return adsImageService.get(id);
+    public ResponseEntity<byte[]> getImage(@PathVariable String id) {
+        byte[] data = adsImageService.get(id);
+        if (data[0] == 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(data);
     }
 }
