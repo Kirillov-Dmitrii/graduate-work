@@ -49,7 +49,7 @@ ALTER TABLE ads_comments ADD FOREIGN KEY (ads_id) REFERENCES ads(pk);
 CREATE TABLE ads_images
 (
     id VARCHAR(255) primary key,
-    data oid  not null,
+    data oid,
     file_path VARCHAR(255),
     file_size BIGINT not null,
     media_type VARCHAR (255)
@@ -59,3 +59,15 @@ CREATE TABLE ads_images
 ALTER TABLE ads_images ADD COLUMN ads_pk SERIAL;
 ALTER TABLE ads_images ADD FOREIGN KEY (ads_pk) REFERENCES ads(pk);
 
+--changeset dkirillov:8
+CREATE TABLE user_image
+(
+    id VARCHAR(255) primary key,
+    file_size BIGINT,
+    media_type VARCHAR(255),
+    data oid
+)
+
+--changeset dkirillov:9
+ALTER TABLE user_image ADD COLUMN user_id SERIAL;
+ALTER TABLE user_image ADD FOREIGN KEY (user_id) REFERENCES users(id);
