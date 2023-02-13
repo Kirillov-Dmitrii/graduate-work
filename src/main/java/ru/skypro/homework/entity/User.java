@@ -5,11 +5,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.skypro.homework.dto.Role;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Collection;
 
 @Entity
@@ -36,7 +33,7 @@ public class User {
     private String username;
 
     private String password;
-
+    @Enumerated(EnumType.ORDINAL)
     private Role role;
 
 }

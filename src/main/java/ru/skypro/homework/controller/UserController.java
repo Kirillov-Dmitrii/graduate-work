@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,7 +51,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-
+    @Secured("ROLE_USER")
     @GetMapping("/me")
     public ResponseEntity<UserDto> getUser() {
         UserDto userDto = userService.get();
@@ -69,6 +71,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+    @Secured("ROLE_USER")
     @PostMapping("/set_password")
     public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword newPassword, Authentication authentication) {
         NewPassword resultPassword = new NewPassword();
@@ -89,6 +92,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+    @Secured("ROLE_USER")
     @PatchMapping("/me")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
         UserDto userDtoCopy = userService.set(userDto);
@@ -106,6 +110,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "OK"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+    @Secured("ROLE_USER")
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity updateUserImage(@RequestParam MultipartFile image) {
         userService.updateImage(image);
@@ -120,6 +125,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "OK"),
 
             @ApiResponse(responseCode = "404", description = "Not Found")})
+    @Secured("ROLE_USER")
     @GetMapping(value = "/me/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
     ResponseEntity<byte[]> getUserImage(@PathVariable String id) {
         byte[] data = userService.getImage(id);
