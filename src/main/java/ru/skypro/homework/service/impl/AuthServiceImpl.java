@@ -52,49 +52,41 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean login(String userName, String password) {
-/*        if (!manager.userExists(userName)) {
-            return false;
-        }*/
         UserDetails userDetails;
         try {
             userDetails = loadUserByUsername(userName);
         } catch (UsernameNotFoundException e) {
             return false;
         }
-/*        UserDetails userDetails = manager.loadUserByUsername(userName);*/
         String encryptedPassword = userDetails.getPassword();
-        String encryptedPasswordWithoutEncryptionType = encryptedPassword.substring(8);
-        return encoder.matches(password, encryptedPasswordWithoutEncryptionType);
+        return encoder.matches(password, encryptedPassword);
     }
 
     @Override
     public boolean register(RegisterReq registerReq, Role role) {
-/*        if (manager.userExists(registerReq.getUsername())) {
-            return false;
-        }*/
-        UserDetails userDetails;
         try {
-            userDetails = loadUserByUsername(registerReq.getUsername());
+            loadUserByUsername(registerReq.getUsername());
         } catch (UsernameNotFoundException e) {
             UserDetails userToRegister = User.builder()
                     .username(registerReq.getUsername())
-                    .password(encoder.encode(registerReq.getPassword()))
+                    .password(registerReq.getPassword())
                     .roles(role.name()).build();
             ru.skypro.homework.entity.User newUser = new ru.skypro.homework.entity.User();
             newUser.setUsername(userToRegister.getUsername());
-            newUser.setPassword(userToRegister.getPassword());
+            newUser.setPassword(encoder.encode(userToRegister.getPassword()));
             newUser.setRole(role);
             userService.save(newUser);
             return true;
         }
-/*        manager.createUser(
-                User.withDefaultPasswordEncoder()
-                        .password(registerReq.getPassword())
-                        .username(registerReq.getUsername())
-                        .roles(role.name())
-                        .build()
-        );*/
         return false;
+    }
+
+    public void changePassword(String userName, String currentPassword, String newPassword) {
+        UserDetails userDetails = loadUserByUsername(userName);
+        if (encoder.matches(currentPassword, userDetails.getPassword().substring(8))) {
+            ru.skypro.homework.entity.User user = userRepository.findByUsername(userName);
+            //user.setPassword();
+        }
     }
 
 }
