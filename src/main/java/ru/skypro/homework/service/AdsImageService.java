@@ -19,8 +19,9 @@ public class AdsImageService {
     public byte[] get(String id) {
         if (adsImageRepository.existsById(id)) {
             return adsImageRepository.findById(id).get().getData();
+        } else {
+            return null;
         }
-        return new byte[0];
     }
 
     public byte[] update(String id, MultipartFile image) {
@@ -36,7 +37,7 @@ public class AdsImageService {
                 throw new RuntimeException(e);
             }
         }
-        return new byte[0];
+        return null;
     }
 
 }

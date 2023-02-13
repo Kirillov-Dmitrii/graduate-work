@@ -45,7 +45,7 @@ public class ImageController {
     ResponseEntity<byte[]> updateImage(@PathVariable String id, @RequestParam MultipartFile image) {
         logger.info("updateImage");
         byte[] data = adsImageService.update(id, image);
-        if (data[0] == 0) {
+        if (data == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(data);
@@ -61,7 +61,7 @@ public class ImageController {
     @GetMapping(value = "/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> getImage(@PathVariable String id) {
         byte[] data = adsImageService.get(id);
-        if (data[0] == 0) {
+        if (data == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(data);

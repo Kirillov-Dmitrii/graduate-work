@@ -78,7 +78,11 @@ public class UserService {
         if (userImageRepository.existsById(id)) {
             return userImageRepository.findById(id).get().getData();
         }
-        return new byte[0];
+        return null;
+    }
+
+    public void save(User user) {
+        userRepository.save(user);
     }
 
 }
