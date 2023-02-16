@@ -200,7 +200,7 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/{ad_pk}/comments/{id}")
-    ResponseEntity<AdsCommentDto> getComments(@PathVariable("adPk") String adPk, @PathVariable("id") Integer id) {
+    ResponseEntity<AdsCommentDto> getComments(@PathVariable("ad_pk") String adPk, @PathVariable("id") Integer id) {
         logger.info("getComments");
         return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
     }
@@ -217,9 +217,10 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @DeleteMapping("/{ad_pk}/comments/{id}")
-    ResponseEntity<Void> deleteComments(@PathVariable("adPk") Integer adPk, @PathVariable("id") Integer id) {
+    ResponseEntity<Void> deleteComments(@PathVariable("ad_pk") Integer adPk, @PathVariable("id") Integer id) {
         logger.info("deleteComments");
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        adsCommentService.deleteComment(id);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(
@@ -235,8 +236,10 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found")})
     @PatchMapping("/{ad_pk}/comments/{id}")
-    ResponseEntity<AdsCommentDto> updateComments(@PathVariable("adPk") Integer adPk, @PathVariable("id") Integer id, @RequestBody AdsCommentDto adsCommentDtoBody) {
+    ResponseEntity<AdsCommentDto> updateComments(@PathVariable("ad_pk") Integer adPk, @PathVariable("id") Integer id,
+                                                 @RequestBody AdsCommentDto adsCommentDtoBody) {
         logger.info("updateComments");
-        return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
+        adsCommentService.updateComment(id, adsCommentDtoBody);
+        return ResponseEntity.ok().build();
     }
 }

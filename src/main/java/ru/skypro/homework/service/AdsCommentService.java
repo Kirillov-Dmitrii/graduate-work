@@ -55,4 +55,14 @@ public class AdsCommentService {
         adsComment.setAds(ads);
         commentRepository.save(adsComment);
     }
+
+    public void deleteComment(Integer id) {
+        commentRepository.deleteById(id);
+    }
+
+    public void updateComment(Integer id, AdsCommentDto commentDto) {
+        AdsComment adsComment = adsCommentMapper.toEntity(commentDto);
+        adsComment.setPk(id);
+        commentRepository.save(adsComment);
+    }
 }
