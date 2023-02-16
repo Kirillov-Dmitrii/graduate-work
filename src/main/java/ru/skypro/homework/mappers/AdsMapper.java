@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Component
 public class AdsMapper {
 
-    public ResponseWrapperAds toResponseWrapperAds(Collection<AdsDto> adsDtoCollection) {
+    public ResponseWrapperAds toResponseWrapperAds(List<AdsDto> adsDtoCollection) {
         ResponseWrapperAds responseWrapperAds = new ResponseWrapperAds();
         responseWrapperAds.setCount(adsDtoCollection.size());
         responseWrapperAds.setResults(adsDtoCollection);

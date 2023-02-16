@@ -52,10 +52,9 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getUser() {
-        UserDto userDto = userService.get();
-
-            return ResponseEntity.ok(userDto);
+    public ResponseEntity<UserDto> getUser(Authentication authentication) {
+        UserDto userDto = userService.get(authentication.getName());
+        return ResponseEntity.ok(userDto);
 
     }
     @Operation(
@@ -91,8 +90,8 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/me")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
-        UserDto userDtoCopy = userService.set(userDto);
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, Authentication authentication) {
+        UserDto userDtoCopy = userService.set(userDto, authentication.getName());
         if (userDtoCopy != null) {
             return ResponseEntity.ok(userDtoCopy);
         } else {
@@ -109,8 +108,8 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PreAuthorize("isAuthenticated()")
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity updateUserImage(@RequestParam MultipartFile image) {
-        userService.updateImage(image);
+    public ResponseEntity updateUserImage(@RequestParam MultipartFile image, Authentication authentication) {
+        userService.updateImage(image, authentication.getName());
         return ResponseEntity.ok().build();
     }
 

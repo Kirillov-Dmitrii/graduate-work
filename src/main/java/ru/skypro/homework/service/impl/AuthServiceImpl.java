@@ -16,6 +16,8 @@ import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AuthService;
 import ru.skypro.homework.service.UserService;
 
+import java.time.LocalDateTime;
+
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -67,6 +69,11 @@ public class AuthServiceImpl implements AuthService {
             newUser.setUsername(userToRegister.getUsername());
             newUser.setPassword(encoder.encode(userToRegister.getPassword()));
             newUser.setRole(role);
+            newUser.setRegDate(LocalDateTime.now().toString());
+            newUser.setFirstName(registerReq.getFirstName());
+            newUser.setLastName(registerReq.getLastName());
+            newUser.setPhone(registerReq.getPhone());
+            newUser.setEmail(registerReq.getUsername());
             userService.save(newUser);
             return true;
         }

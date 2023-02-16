@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 
+import java.time.LocalDateTime;
+
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -27,13 +29,14 @@ public class WebSecurityConfig {
             "/webjars/**",
             "/login", "/register" ,
             "/ads", "/image",
-            "/me/image"
+            "/users/me/image/*"
     };
 
     @Bean
     BCryptPasswordEncoder getEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
 /*    @Bean
     public InMemoryUserDetailsManager userDetailsService() {

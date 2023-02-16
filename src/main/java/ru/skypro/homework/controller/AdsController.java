@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,12 +62,12 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found")})
     @PreAuthorize("isAuthenticated()")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAds createAds, @RequestParam MultipartFile image) throws IOException {
+    ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAds createAds, @RequestParam MultipartFile image, Authentication authentication) throws IOException {
         logger.info("addAds");
         if (createAds.getDescription() == null || createAds.getTitle() == null || createAds.getPrice() == null) {
             return ResponseEntity.badRequest().build();
         }
-        AdsDto adsDto = adsService.add(createAds, image);
+        AdsDto adsDto = adsService.add(createAds, image, authentication.getName());
         if (adsDto == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -86,9 +87,9 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
-    ResponseEntity<ResponseWrapperAds> getAdsMe() {
+    ResponseEntity<ResponseWrapperAds> getAdsMe(Authentication authentication) {
         logger.info("getAdsMe");
-        ResponseWrapperAds responseWrapperAds = adsService.getAdsMe();
+        ResponseWrapperAds responseWrapperAds = adsService.getAdsMe(authentication.getName());
         return ResponseEntity.ok(responseWrapperAds);
     }
     @Operation(
