@@ -1,12 +1,19 @@
 package ru.skypro.homework.service;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.entity.UserImage;
 import ru.skypro.homework.mappers.UserMapper;
+import ru.skypro.homework.mappers.UserPrincipal;
 import ru.skypro.homework.repository.UserImageRepository;
 import ru.skypro.homework.repository.UserRepository;
 
@@ -22,7 +29,9 @@ public class UserService {
 
     private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, UserImageRepository userImageRepository) {
+
+    public UserService(UserRepository userRepository, UserMapper userMapper,
+                       UserImageRepository userImageRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.userImageRepository = userImageRepository;

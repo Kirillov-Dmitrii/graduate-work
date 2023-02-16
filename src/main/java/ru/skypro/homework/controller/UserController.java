@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +19,6 @@ import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.service.AuthService;
 import ru.skypro.homework.service.UserService;
-import ru.skypro.homework.service.impl.AuthServiceImpl;
 
 @RestController
 @Tag(name = "Пользователь", description = "Управление данными пользователя")
@@ -74,9 +72,7 @@ public class UserController {
     @Secured("ROLE_USER")
     @PostMapping("/set_password")
     public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword newPassword, Authentication authentication) {
-        NewPassword resultPassword = new NewPassword();
-
-        return new ResponseEntity<NewPassword>(HttpStatus.NOT_IMPLEMENTED);
+        return ResponseEntity.ok(authService.setPassword(newPassword, authentication));
     }
     @Operation(
             summary = "Обновить данные",
