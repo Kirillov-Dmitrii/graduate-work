@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
+import ru.skypro.homework.service.AdsCommentService;
 import ru.skypro.homework.service.AdsService;
 
 import java.io.IOException;
@@ -26,11 +26,13 @@ import java.io.IOException;
 public class AdsController {
 
     private final AdsService adsService;
+    private final AdsCommentService adsCommentService;
 
     private final Logger logger = LoggerFactory.getLogger(AdsController.class);
 
-    public AdsController(AdsService adsService) {
+    public AdsController(AdsService adsService, AdsCommentService adsCommentService) {
         this.adsService = adsService;
+        this.adsCommentService = adsCommentService;
     }
 
     @Operation(
@@ -87,6 +89,8 @@ public class AdsController {
         ResponseWrapperAds responseWrapperAds = adsService.getAdsMe();
         return ResponseEntity.ok(responseWrapperAds);
     }
+
+
     @Operation(
             summary = "Посмотреть комментарии",
             description = "Получает все комментарии, которые оставили под объявлением"
@@ -96,13 +100,16 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @GetMapping("/{ad_pk}/comments")
-    ResponseEntity<ResponseWrapperAdsComment> getAdsComments(@PathVariable Integer adPk) {
+    ResponseEntity<ResponseWrapperAdsComment> getAdsComments(@PathVariable("ad_pk") Integer adPk) {
         logger.info("getAdsComments");
         if (adPk < 0) {
             return ResponseEntity.badRequest().build();
         }
-        return new ResponseEntity<ResponseWrapperAdsComment>(HttpStatus.NOT_IMPLEMENTED);
+        ResponseWrapperAdsComment responseWrapperAdsComment = adsCommentService.getAdsComments(adPk);
+        return ResponseEntity.ok(responseWrapperAdsComment);
     }
+
+
     @Operation(
             summary = "Добавить комментарий к объявлению",
             description = ""
@@ -116,9 +123,11 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PostMapping("/{ad_pk}/comments")
-    ResponseEntity<AdsCommentDto> addComments(@PathVariable Integer adPk, @RequestBody AdsCommentDto adsCommentDto) {
+    ResponseEntity<AdsCommentDto> addComments(@PathVariable("ad_pk") Integer adPk,
+                                              @RequestBody AdsCommentDto adsCommentDto) {
         logger.info("addComments");
-        return new ResponseEntity<AdsCommentDto>(HttpStatus.NOT_IMPLEMENTED);
+        adsCommentService.adsComments(adPk, adsCommentDto);
+        return ResponseEntity.ok(adsCommentDto);
     }
     @Operation(
             summary = "Получить объявление",

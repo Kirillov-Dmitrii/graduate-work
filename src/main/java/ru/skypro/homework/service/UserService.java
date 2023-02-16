@@ -11,7 +11,6 @@ import ru.skypro.homework.repository.UserImageRepository;
 import ru.skypro.homework.repository.UserRepository;
 
 import java.io.IOException;
-import java.util.NoSuchElementException;
 
 @Service
 public class UserService {
