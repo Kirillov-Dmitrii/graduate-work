@@ -24,7 +24,8 @@ public class WebSecurityConfig extends GlobalMethodSecurityConfiguration {
             "/v3/api-docs",
             "/webjars/**",
             "/login", "/register" ,
-            "/ads", "/image"
+            "/ads", "/image",
+            "/me/image"
     };
 
     @Bean
