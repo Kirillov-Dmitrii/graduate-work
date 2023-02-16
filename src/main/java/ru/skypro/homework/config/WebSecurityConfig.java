@@ -3,14 +3,13 @@ package ru.skypro.homework.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
-
-import java.time.LocalDateTime;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -38,6 +37,8 @@ public class WebSecurityConfig {
     }
 
 
+
+
 /*    @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails user = User.withDefaultPasswordEncoder()
@@ -60,7 +61,10 @@ public class WebSecurityConfig {
 
                 )
                 .cors().and()
-                .httpBasic(withDefaults());
+                .httpBasic(withDefaults())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                        .invalidSessionUrl("/").maximumSessions(1).maxSessionsPreventsLogin(true).expiredUrl("/"))
+                .logout(logout -> logout.deleteCookies("JSESSIONID"));
         return http.build();
     }
 

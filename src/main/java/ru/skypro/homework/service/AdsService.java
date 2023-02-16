@@ -112,10 +112,14 @@ public class AdsService {
         }
         return null;
     }
-
+    @Transactional
     public Boolean remove(Integer id) {
         Boolean exists = adsRepository.existsById(id);
         if (exists) {
+            List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(id);
+            adsImages.forEach(adsImage -> {
+                adsImageRepository.deleteById(adsImage.getId());
+            });
             adsRepository.deleteById(id);
             return true;
         }
