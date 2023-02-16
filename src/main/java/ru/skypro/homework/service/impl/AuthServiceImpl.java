@@ -26,8 +26,8 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
 
-    public AuthServiceImpl(UserRepository userRepository, UserService userService) {
-        this.encoder = new BCryptPasswordEncoder();
+    public AuthServiceImpl(UserRepository userRepository, UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.encoder = bCryptPasswordEncoder;
         this.userRepository = userRepository;
         this.userService = userService;
     }

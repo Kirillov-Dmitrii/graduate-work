@@ -18,5 +18,5 @@ public class UserImage {
     @Lob
     private byte[] data;
     @OneToOne
-    User user;
+    private User user;
 }

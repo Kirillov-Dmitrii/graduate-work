@@ -41,7 +41,6 @@ public class AdsController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = ResponseWrapperAds.class))) })
-    @Secured("ROLE_USER")
     @GetMapping
     public ResponseEntity<ResponseWrapperAds> getAllAds() {
         logger.info("getAllAds");
@@ -60,7 +59,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found")})
-    @Secured("ROLE_USER")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAds createAds, @RequestParam MultipartFile image) throws IOException {
         logger.info("addAds");
@@ -85,7 +84,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-    @Secured("ROLE_USER")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
     ResponseEntity<ResponseWrapperAds> getAdsMe() {
         logger.info("getAdsMe");
@@ -100,7 +99,6 @@ public class AdsController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = ResponseWrapperAdsComment.class))),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-    @Secured("ROLE_USER")
     @GetMapping("/{ad_pk}/comments")
     ResponseEntity<ResponseWrapperAdsComment> getAdsComments(@PathVariable Integer adPk) {
         logger.info("getAdsComments");
@@ -121,7 +119,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-    @Secured("ROLE_USER")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/{ad_pk}/comments")
     ResponseEntity<AdsCommentDto> addComments(@PathVariable Integer adPk, @RequestBody AdsCommentDto adsCommentDto) {
         logger.info("addComments");
@@ -135,7 +133,7 @@ public class AdsController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = FullAds.class))),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-    @Secured("ROLE_USER")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     ResponseEntity<FullAds> getFullAd(@PathVariable Integer id) {
         logger.info("getFullAd");
@@ -155,7 +153,7 @@ public class AdsController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
 
             @ApiResponse(responseCode = "403", description = "Forbidden") })
-    @Secured("ROLE_USER")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
     ResponseEntity<Void> removeAds(@PathVariable Integer id) {
         logger.info("removeAds");
@@ -179,7 +177,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-    @Secured("ROLE_USER")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{id}")
     ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAds adsBody) {
         logger.info("updateAds");
@@ -200,7 +198,6 @@ public class AdsController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = AdsCommentDto.class))),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-    @Secured("ROLE_USER")
     @GetMapping("/{ad_pk}/comments/{id}")
     ResponseEntity<AdsCommentDto> getComments(@PathVariable("adPk") String adPk, @PathVariable("id") Integer id) {
         logger.info("getComments");
@@ -218,7 +215,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-    @Secured("ROLE_USER")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{ad_pk}/comments/{id}")
     ResponseEntity<Void> deleteComments(@PathVariable("adPk") Integer adPk, @PathVariable("id") Integer id) {
         logger.info("deleteComments");
@@ -237,7 +234,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found")})
-    @Secured("ROLE_USER")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{ad_pk}/comments/{id}")
     ResponseEntity<AdsCommentDto> updateComments(@PathVariable("adPk") Integer adPk, @PathVariable("id") Integer id, @RequestBody AdsCommentDto adsCommentDtoBody) {
         logger.info("updateComments");
