@@ -20,7 +20,7 @@ import ru.skypro.homework.service.AdsImageService;
 import java.util.Collection;
 
 @RestController
-@Tag(name = "Аватарка", description = "Получения фотографии пользователя")
+@Tag(name = "Аватарка", description = "Работа с изображениями объявлений")
 @RequestMapping("/image")
 @CrossOrigin(value = "http://localhost:3000")
 public class ImageController {
@@ -34,7 +34,7 @@ public class ImageController {
     }
 
     @Operation(
-            summary = "Обновить фотографию",
+            summary = "Обновить изображение",
             description = ""
     )
     @ApiResponses(value = {
@@ -51,7 +51,7 @@ public class ImageController {
         return ResponseEntity.ok(data);
     }
     @Operation(
-            summary = "Получить фотографию",
+            summary = "Получить изображение",
             description = ""
     )
     @ApiResponses(value = {
