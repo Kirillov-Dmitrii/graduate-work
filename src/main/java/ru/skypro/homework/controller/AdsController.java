@@ -69,10 +69,11 @@ public class AdsController {
             return ResponseEntity.badRequest().build();
         }
         AdsDto adsDto = adsService.add(createAds, image, authentication.getName());
+        logger.info(adsDto.toString());
         if (adsDto == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return ResponseEntity.ok(adsDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
     @Operation(
             summary = "Получить объявления пользователя",

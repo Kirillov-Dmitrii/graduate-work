@@ -71,9 +71,12 @@ public class AdsService {
         User user = userService.getUserFromDB(userName);
         Ads ads = adsMapper.toAds(createAds);
         ads.setUser(user);
-        adsImage.setAds(adsRepository.save(ads));
+        Ads savedAds = adsRepository.save(ads);
+        adsImage.setAds(savedAds);
         adsImageRepository.save(adsImage);
-        return adsMapper.toAdsDto(ads);
+        AdsDto adsDto = adsMapper.toAdsDto(ads);
+        adsDto.setImage(Collections.singletonList("/image/" + adsImage.getId()));
+        return adsDto;
     }
     @Transactional
     public ResponseWrapperAds getAdsMe(String userName) {
