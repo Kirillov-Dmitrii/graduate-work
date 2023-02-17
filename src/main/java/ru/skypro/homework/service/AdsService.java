@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.component.Authority;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.Ads;
 import ru.skypro.homework.entity.AdsImage;
@@ -112,18 +113,18 @@ public class AdsService {
             fullAds.setTitle(ads.getTitle());
             fullAds.setAuthorFirstName(userDto.getFirstName());
             fullAds.setAuthorLastName(userDto.getLastName());
+            System.out.println("fullAds = " + fullAds);
             return fullAds;
         }
         return null;
     }
+
+
     @Transactional
     public Boolean remove(Integer id, Authentication authentication) {
-        String role = authentication.getAuthorities().stream().map(e -> e.getAuthority())
-                .filter(e -> e.equals(Role.ADMIN.toString())).findFirst().orElse(Role.USER.toString());
-        boolean exists = adsRepository.existsById(id);
-        if (exists) {
-            if (role.equals(Role.ADMIN.toString()) ||
-                    (role.equals(Role.USER.toString()) && adsRepository.existsByPkAndUser_Username(id, authentication.getName()))) {
+            if (Authority.check(authentication).equals(Role.ADMIN.toString()) ||
+                    (Authority.check(authentication).equals(Role.USER.toString())
+                            && adsRepository.existsByPkAndUser_Username(id, authentication.getName()))) {
                 List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(id);
                 adsImages.forEach(adsImage -> {
                     adsImageRepository.deleteById(adsImage.getId());
@@ -131,18 +132,24 @@ public class AdsService {
                 adsRepository.deleteById(id);
                 return true;
             }
-        }
         return false;
     }
-
-    public AdsDto update(Integer id, CreateAds createAds) {
-        Ads ads = adsRepository.findById(id).orElse(null);
-        if (ads != null) {
-            ads.setDescription(createAds.getDescription());
-            ads.setPrice(createAds.getPrice());
-            ads.setTitle(createAds.getTitle());
-            adsRepository.save(ads);
-            return adsMapper.toAdsDto(ads);
+    @Transactional
+    public AdsDto update(Integer id, CreateAds createAds, Authentication authentication) {
+        if (Authority.check(authentication).equals(Role.ADMIN.toString()) ||
+                (Authority.check(authentication).equals(Role.USER.toString())
+                        && adsRepository.existsByPkAndUser_Username(id, authentication.getName()))) {
+            Ads ads = adsRepository.findById(id).orElse(null);
+            if (ads != null) {
+                ads.setDescription(createAds.getDescription());
+                ads.setPrice(createAds.getPrice());
+                ads.setTitle(createAds.getTitle());
+                adsRepository.save(ads);
+                AdsDto adsDto = adsMapper.toAdsDto(ads);
+                List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk());
+                adsDto.setImage(adsImages.stream().map(e -> e.getId()).map(e -> "/image/" + e).collect(Collectors.toList()));
+                return adsDto;
+            }
         }
         return null;
     }

@@ -181,12 +181,12 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not Found") })
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{id}")
-    ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAds adsBody) {
+    ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAds adsBody, Authentication authentication) {
         logger.info("updateAds");
         if (id < 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        AdsDto adsDto = adsService.update(id, adsBody);
+        AdsDto adsDto = adsService.update(id, adsBody, authentication);
         if (adsDto == null) {
             return ResponseEntity.notFound().build();
         }
