@@ -12,4 +12,6 @@ public interface AdsRepository extends JpaRepository<Ads, Integer> {
 
     List<Ads> findAllByUser_Username(String userName);
 
+    boolean existsByPkAndUser_Username(Integer pk, String userName);
+
 }

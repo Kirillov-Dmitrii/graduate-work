@@ -1,5 +1,6 @@
 package ru.skypro.homework.service;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -113,15 +114,20 @@ public class AdsService {
         return null;
     }
     @Transactional
-    public Boolean remove(Integer id) {
-        Boolean exists = adsRepository.existsById(id);
+    public Boolean remove(Integer id, Authentication authentication) {
+        String role = authentication.getAuthorities().stream().map(e -> e.getAuthority())
+                .filter(e -> e.equals(Role.ADMIN.toString())).findFirst().orElse(Role.USER.toString());
+        boolean exists = adsRepository.existsById(id);
         if (exists) {
-            List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(id);
-            adsImages.forEach(adsImage -> {
-                adsImageRepository.deleteById(adsImage.getId());
-            });
-            adsRepository.deleteById(id);
-            return true;
+            if (role.equals(Role.ADMIN.toString()) ||
+                    (role.equals(Role.USER.toString()) && adsRepository.existsByPkAndUser_Username(id, authentication.getName()))) {
+                List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(id);
+                adsImages.forEach(adsImage -> {
+                    adsImageRepository.deleteById(adsImage.getId());
+                });
+                adsRepository.deleteById(id);
+                return true;
+            }
         }
         return false;
     }

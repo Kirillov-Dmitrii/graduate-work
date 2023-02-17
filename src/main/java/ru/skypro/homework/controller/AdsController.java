@@ -11,16 +11,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.service.AdsService;
 
 import java.io.IOException;
+import java.util.Collection;
+
 
 @RestController
 @Tag(name = "Объявления", description = "Работа с объявлениями и комментариями")
@@ -134,7 +135,6 @@ public class AdsController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = FullAds.class))),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     ResponseEntity<FullAds> getFullAd(@PathVariable Integer id) {
         logger.info("getFullAd");
@@ -156,12 +156,12 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden") })
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> removeAds(@PathVariable Integer id) {
-        logger.info("removeAds");
+    ResponseEntity<Void> removeAds(@PathVariable Integer id, Authentication authentication) {
+        logger.info("removeAds ");
         if (id < 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        if (!adsService.remove(id)) {
+        if (!adsService.remove(id, authentication)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok().build();
