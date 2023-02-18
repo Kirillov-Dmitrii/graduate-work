@@ -14,7 +14,7 @@ import java.util.Collection;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(generator = "user_id_generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String email;
 
