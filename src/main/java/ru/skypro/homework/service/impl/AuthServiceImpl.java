@@ -1,53 +1,96 @@
 package ru.skypro.homework.service.impl;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.RegisterReq;
 import ru.skypro.homework.dto.Role;
+import ru.skypro.homework.mappers.UserPrincipal;
+import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AuthService;
+import ru.skypro.homework.service.UserService;
+
+import java.time.LocalDateTime;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    private final UserDetailsManager manager;
 
     private final PasswordEncoder encoder;
 
-    public AuthServiceImpl(UserDetailsManager manager) {
-        this.manager = manager;
-        this.encoder = new BCryptPasswordEncoder();
+    private UserRepository userRepository;
+
+    private final UserService userService;
+
+    public AuthServiceImpl(UserRepository userRepository, UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.encoder = bCryptPasswordEncoder;
+        this.userRepository = userRepository;
+        this.userService = userService;
+    }
+
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        ru.skypro.homework.entity.User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(username);
+        }
+        return new UserPrincipal(user);
     }
 
     @Override
     public boolean login(String userName, String password) {
-        if (!manager.userExists(userName)) {
+        UserDetails userDetails;
+        try {
+            userDetails = loadUserByUsername(userName);
+        } catch (UsernameNotFoundException e) {
             return false;
         }
-        UserDetails userDetails = manager.loadUserByUsername(userName);
         String encryptedPassword = userDetails.getPassword();
-        String encryptedPasswordWithoutEncryptionType = encryptedPassword.substring(8);
-        return encoder.matches(password, encryptedPasswordWithoutEncryptionType);
+        return encoder.matches(password, encryptedPassword);
     }
 
     @Override
     public boolean register(RegisterReq registerReq, Role role) {
-        if (manager.userExists(registerReq.getUsername())) {
-            return false;
+        try {
+            loadUserByUsername(registerReq.getUsername());
+        } catch (UsernameNotFoundException e) {
+            UserDetails userToRegister = User.builder()
+                    .username(registerReq.getUsername())
+                    .password(registerReq.getPassword())
+                    .roles(role.name()).build();
+            ru.skypro.homework.entity.User newUser = new ru.skypro.homework.entity.User();
+            newUser.setUsername(userToRegister.getUsername());
+            newUser.setPassword(encoder.encode(userToRegister.getPassword()));
+            newUser.setRole(role);
+            newUser.setRegDate(LocalDateTime.now().toString());
+            newUser.setFirstName(registerReq.getFirstName());
+            newUser.setLastName(registerReq.getLastName());
+            newUser.setPhone(registerReq.getPhone());
+            newUser.setEmail(registerReq.getUsername());
+            userService.save(newUser);
+            return true;
         }
-        manager.createUser(
-                User.withDefaultPasswordEncoder()
-                        .password(registerReq.getPassword())
-                        .username(registerReq.getUsername())
-                        .roles(role.name())
-                        .build()
-        );
-        return true;
+        return false;
     }
+
+    public NewPassword setPassword(NewPassword newPassword, Authentication authentication)  {
+        NewPassword resultPassword = new NewPassword();
+        UserDetails userDetails = loadUserByUsername(authentication.getName());
+        if (encoder.matches(newPassword.getCurrentPassword(), userDetails.getPassword())) {
+            resultPassword.setNewPassword(newPassword.getNewPassword());
+            ru.skypro.homework.entity.User user = userRepository.findByUsername(userDetails.getUsername());
+            user.setPassword(encoder.encode(newPassword.getNewPassword()));
+            userRepository.save(user);
+        }
+        return resultPassword;
+    }
+
+
 }

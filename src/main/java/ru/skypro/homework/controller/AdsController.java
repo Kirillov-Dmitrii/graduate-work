@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
@@ -18,6 +19,8 @@ import ru.skypro.homework.service.AdsCommentService;
 import ru.skypro.homework.service.AdsService;
 
 import java.io.IOException;
+import java.util.Collection;
+
 
 @RestController
 @Tag(name = "Объявления", description = "Работа с объявлениями и комментариями")
@@ -59,17 +62,19 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found")})
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAds createAds, @RequestParam MultipartFile image) throws IOException {
+    ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAds createAds, @RequestParam MultipartFile image, Authentication authentication) throws IOException {
         logger.info("addAds");
         if (createAds.getDescription() == null || createAds.getTitle() == null || createAds.getPrice() == null) {
             return ResponseEntity.badRequest().build();
         }
-        AdsDto adsDto = adsService.add(createAds, image);
+        AdsDto adsDto = adsService.add(createAds, image, authentication.getName());
+        logger.info(adsDto.toString());
         if (adsDto == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return ResponseEntity.ok(adsDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
     @Operation(
             summary = "Получить объявления пользователя",
@@ -83,10 +88,11 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
-    ResponseEntity<ResponseWrapperAds> getAdsMe() {
+    ResponseEntity<ResponseWrapperAds> getAdsMe(Authentication authentication) {
         logger.info("getAdsMe");
-        ResponseWrapperAds responseWrapperAds = adsService.getAdsMe();
+        ResponseWrapperAds responseWrapperAds = adsService.getAdsMe(authentication.getName());
         return ResponseEntity.ok(responseWrapperAds);
     }
 
@@ -122,6 +128,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/{ad_pk}/comments")
     ResponseEntity<AdsCommentDto> addComments(@PathVariable("ad_pk") Integer adPk,
                                               @RequestBody AdsCommentDto adsCommentDto) {
@@ -156,13 +163,14 @@ public class AdsController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
 
             @ApiResponse(responseCode = "403", description = "Forbidden") })
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> removeAds(@PathVariable Integer id) {
-        logger.info("removeAds");
+    ResponseEntity<Void> removeAds(@PathVariable Integer id, Authentication authentication) {
+        logger.info("removeAds ");
         if (id < 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        if (!adsService.remove(id)) {
+        if (!adsService.remove(id, authentication)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok().build();
@@ -179,13 +187,14 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{id}")
-    ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAds adsBody) {
+    ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAds adsBody, Authentication authentication) {
         logger.info("updateAds");
         if (id < 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        AdsDto adsDto = adsService.update(id, adsBody);
+        AdsDto adsDto = adsService.update(id, adsBody, authentication);
         if (adsDto == null) {
             return ResponseEntity.notFound().build();
         }
@@ -216,6 +225,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{ad_pk}/comments/{id}")
     ResponseEntity<Void> deleteComments(@PathVariable("ad_pk") Integer adPk, @PathVariable("id") Integer id) {
         logger.info("deleteComments");
@@ -235,6 +245,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found")})
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{ad_pk}/comments/{id}")
     ResponseEntity<AdsCommentDto> updateComments(@PathVariable("ad_pk") Integer adPk, @PathVariable("id") Integer id,
                                                  @RequestBody AdsCommentDto adsCommentDtoBody) {

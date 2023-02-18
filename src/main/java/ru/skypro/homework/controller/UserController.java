@@ -11,10 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UserDto;
+import ru.skypro.homework.service.AuthService;
 import ru.skypro.homework.service.UserService;
 
 @RestController
@@ -25,10 +29,13 @@ public class UserController {
 
     private final UserService userService;
 
+    private final AuthService authService;
+
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthService authService) {
         this.userService = userService;
+        this.authService = authService;
     }
 
     @Operation(
@@ -43,12 +50,11 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getUser() {
-        UserDto userDto = userService.get();
-
-            return ResponseEntity.ok(userDto);
+    public ResponseEntity<UserDto> getUser(Authentication authentication) {
+        UserDto userDto = userService.get(authentication.getName());
+        return ResponseEntity.ok(userDto);
 
     }
     @Operation(
@@ -63,9 +69,10 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/set_password")
-    public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword newPassword) {
-        return new ResponseEntity<NewPassword>(HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword newPassword, Authentication authentication) {
+        return ResponseEntity.ok(authService.setPassword(newPassword, authentication));
     }
     @Operation(
             summary = "Обновить данные",
@@ -81,9 +88,10 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/me")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
-        UserDto userDtoCopy = userService.set(userDto);
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, Authentication authentication) {
+        UserDto userDtoCopy = userService.set(userDto, authentication.getName());
         if (userDtoCopy != null) {
             return ResponseEntity.ok(userDtoCopy);
         } else {
@@ -98,9 +106,10 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "OK"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity updateUserImage(@RequestParam MultipartFile image) {
-        userService.updateImage(image);
+    public ResponseEntity updateUserImage(@RequestParam MultipartFile image, Authentication authentication) {
+        userService.updateImage(image, authentication.getName());
         return ResponseEntity.ok().build();
     }
 
@@ -113,10 +122,10 @@ public class UserController {
 
             @ApiResponse(responseCode = "404", description = "Not Found")})
     @GetMapping(value = "/me/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
-    ResponseEntity<byte[]> getUserImage(String id) {
+    ResponseEntity<byte[]> getUserImage(@PathVariable String id) {
         byte[] data = userService.getImage(id);
-        if (data[0] == 0) {
-            logger.info("data = 0");
+        if (data == null) {
+            logger.info("image = null");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(data);

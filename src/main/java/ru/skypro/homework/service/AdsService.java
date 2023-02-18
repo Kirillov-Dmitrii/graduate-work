@@ -1,9 +1,10 @@
 package ru.skypro.homework.service;
 
-import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.component.Authority;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.Ads;
 import ru.skypro.homework.entity.AdsImage;
@@ -43,8 +44,8 @@ public class AdsService {
     public ResponseWrapperAds getAll() {
         List<Ads> allAds = adsRepository.findAll();
         ResponseWrapperAds responseWrapperAds;
+        List<AdsDto> adsDtoCollection = new LinkedList<>();
         if (!allAds.isEmpty()) {
-            Collection<AdsDto> adsDtoCollection = new LinkedList<>();
             allAds.forEach(ads -> {
                 List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
                         stream().
@@ -54,15 +55,12 @@ public class AdsService {
                 AdsDto adsDto = adsMapper.toAdsDto(ads);
                 adsDto.setImage(adsImages);
                 adsDtoCollection.add(adsDto);
-            });
-            responseWrapperAds = adsMapper.toResponseWrapperAds(adsDtoCollection);
-        } else {
-            responseWrapperAds = new ResponseWrapperAds();
-        }
+            });}
+        responseWrapperAds = adsMapper.toResponseWrapperAds(adsDtoCollection);
         return responseWrapperAds;
     }
 
-    public AdsDto add(CreateAds createAds, MultipartFile image) {
+    public AdsDto add(CreateAds createAds, MultipartFile image, String userName) {
         AdsImage adsImage = new AdsImage();
         try {
             adsImage.setData(image.getBytes());
@@ -71,18 +69,20 @@ public class AdsService {
         }
         adsImage.setFileSize(image.getSize());
         adsImage.setMediaType(image.getOriginalFilename().substring(image.getOriginalFilename().indexOf(".") + 1));
-        User user = new User();
-        user.setId(1);
+        User user = userService.getUserFromDB(userName);
         Ads ads = adsMapper.toAds(createAds);
         ads.setUser(user);
-        adsImage.setAds(adsRepository.save(ads));
+        Ads savedAds = adsRepository.save(ads);
+        adsImage.setAds(savedAds);
         adsImageRepository.save(adsImage);
-        return adsMapper.toAdsDto(ads);
+        AdsDto adsDto = adsMapper.toAdsDto(ads);
+        adsDto.setImage(Collections.singletonList("/image/" + adsImage.getId()));
+        return adsDto;
     }
     @Transactional
-    public ResponseWrapperAds getAdsMe() {
-        List<Ads> adsList = adsRepository.findAll();
-        Collection<AdsDto> adsDtoCollection = new LinkedList<>();
+    public ResponseWrapperAds getAdsMe(String userName) {
+        List<Ads> adsList = adsRepository.findAllByUser_Username(userName);
+        List<AdsDto> adsDtoCollection = new LinkedList<>();
         if (!adsList.isEmpty()) {
             adsList.forEach(ads -> {
                 List<String> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk()).
@@ -99,8 +99,8 @@ public class AdsService {
     @Transactional
     public FullAds get(Integer id) {
         Ads ads = adsRepository.findById(id).orElse(null);
-        UserDto userDto = userService.get();
         if (ads != null) {
+            UserDto userDto = userService.get(ads.getUser().getUsername());
             List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk());
             FullAds fullAds = new FullAds();
             fullAds.setPk(ads.getPk());
@@ -113,28 +113,43 @@ public class AdsService {
             fullAds.setTitle(ads.getTitle());
             fullAds.setAuthorFirstName(userDto.getFirstName());
             fullAds.setAuthorLastName(userDto.getLastName());
+            System.out.println("fullAds = " + fullAds);
             return fullAds;
         }
         return null;
     }
 
-    public Boolean remove(Integer id) {
-        Boolean exists = adsRepository.existsById(id);
-        if (exists) {
-            adsRepository.deleteById(id);
-            return true;
-        }
+
+    @Transactional
+    public Boolean remove(Integer id, Authentication authentication) {
+            if (Authority.check(authentication).equals(Role.ADMIN.toString()) ||
+                    (Authority.check(authentication).equals(Role.USER.toString())
+                            && adsRepository.existsByPkAndUser_Username(id, authentication.getName()))) {
+                List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(id);
+                adsImages.forEach(adsImage -> {
+                    adsImageRepository.deleteById(adsImage.getId());
+                });
+                adsRepository.deleteById(id);
+                return true;
+            }
         return false;
     }
-
-    public AdsDto update(Integer id, CreateAds createAds) {
-        Ads ads = adsRepository.findById(id).orElse(null);
-        if (ads != null) {
-            ads.setDescription(createAds.getDescription());
-            ads.setPrice(createAds.getPrice());
-            ads.setTitle(createAds.getTitle());
-            adsRepository.save(ads);
-            return adsMapper.toAdsDto(ads);
+    @Transactional
+    public AdsDto update(Integer id, CreateAds createAds, Authentication authentication) {
+        if (Authority.check(authentication).equals(Role.ADMIN.toString()) ||
+                (Authority.check(authentication).equals(Role.USER.toString())
+                        && adsRepository.existsByPkAndUser_Username(id, authentication.getName()))) {
+            Ads ads = adsRepository.findById(id).orElse(null);
+            if (ads != null) {
+                ads.setDescription(createAds.getDescription());
+                ads.setPrice(createAds.getPrice());
+                ads.setTitle(createAds.getTitle());
+                adsRepository.save(ads);
+                AdsDto adsDto = adsMapper.toAdsDto(ads);
+                List<AdsImage> adsImages = adsImageRepository.findAdsImagesByAds_Pk(ads.getPk());
+                adsDto.setImage(adsImages.stream().map(e -> e.getId()).map(e -> "/image/" + e).collect(Collectors.toList()));
+                return adsDto;
+            }
         }
         return null;
     }

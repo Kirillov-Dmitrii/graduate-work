@@ -5,8 +5,7 @@ import ru.skypro.homework.entity.UserImage;
 
 public interface UserImageRepository extends JpaRepository<UserImage, String> {
 
-    UserImage findByUser_Id(Integer id);
+    UserImage findByUser_Username(String userName);
 
-    Boolean existsByUser_Id(Integer id);
 
 }

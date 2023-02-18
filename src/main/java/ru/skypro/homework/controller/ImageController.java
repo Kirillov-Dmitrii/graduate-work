@@ -20,7 +20,7 @@ import ru.skypro.homework.service.AdsImageService;
 import java.util.Collection;
 
 @RestController
-@Tag(name = "Аватарка", description = "Получения фотографии пользователя")
+@Tag(name = "Аватарка", description = "Работа с изображениями объявлений")
 @RequestMapping("/image")
 @CrossOrigin(value = "http://localhost:3000")
 public class ImageController {
@@ -34,7 +34,7 @@ public class ImageController {
     }
 
     @Operation(
-            summary = "Обновить фотографию",
+            summary = "Обновить изображение",
             description = ""
     )
     @ApiResponses(value = {
@@ -45,13 +45,13 @@ public class ImageController {
     ResponseEntity<byte[]> updateImage(@PathVariable String id, @RequestParam MultipartFile image) {
         logger.info("updateImage");
         byte[] data = adsImageService.update(id, image);
-        if (data[0] == 0) {
+        if (data == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(data);
     }
     @Operation(
-            summary = "Получить фотографию",
+            summary = "Получить изображение",
             description = ""
     )
     @ApiResponses(value = {
@@ -61,7 +61,7 @@ public class ImageController {
     @GetMapping(value = "/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> getImage(@PathVariable String id) {
         byte[] data = adsImageService.get(id);
-        if (data[0] == 0) {
+        if (data == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(data);
