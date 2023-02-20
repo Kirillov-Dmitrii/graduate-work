@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class AdsCommentDto {
 
-    private Integer author;
+    private String author;
 
     private String createdAt;
 

@@ -10,14 +10,14 @@ import javax.persistence.*;
 public class AdsComment {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer pk;
 
     @ManyToOne
     @JoinColumn(name = "ads_id")
     private Ads ads;
 
-    private Integer author;
+    private String author;
 
     private String createdAt;
 

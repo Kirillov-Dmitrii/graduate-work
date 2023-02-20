@@ -1,9 +1,14 @@
 package ru.skypro.homework.service;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.component.Authority;
+import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.entity.AdsImage;
 import ru.skypro.homework.repository.AdsImageRepository;
+import ru.skypro.homework.repository.AdsRepository;
 
 import java.io.IOException;
 
@@ -12,8 +17,11 @@ public class AdsImageService {
 
     private final AdsImageRepository adsImageRepository;
 
-    public AdsImageService(AdsImageRepository adsImageRepository) {
+    private final AdsService adsService;
+
+    public AdsImageService(AdsImageRepository adsImageRepository, AdsService adsService) {
         this.adsImageRepository = adsImageRepository;
+        this.adsService = adsService;
     }
 
     public byte[] get(String id) {
@@ -23,16 +31,20 @@ public class AdsImageService {
             return null;
         }
     }
-
-    public byte[] update(String id, MultipartFile image) {
-        if (adsImageRepository.existsById(id)) {
-            AdsImage adsImage = adsImageRepository.findById(id).get();
+    @Transactional
+    public byte[] update(Integer id, MultipartFile image, Authentication authentication) {
+        byte[] data;
+        if (Authority.check(authentication).equals(Role.ADMIN.toString()) ||
+                (Authority.check(authentication).equals(Role.USER.toString())
+                        && adsImageRepository.existsByAds_PkAndAds_User_Username(id, authentication.getName()))) {
+            AdsImage adsImage = adsImageRepository.findByAds_Pk(id);
             adsImage.setFileSize(image.getSize());
             adsImage.setMediaType(image.getOriginalFilename().substring(image.getOriginalFilename().indexOf(".") + 1));
             try {
-                adsImage.setData(image.getBytes());
+                data = image.getBytes();
+                adsImage.setData(data);
                 adsImageRepository.save(adsImage);
-                return image.getBytes();
+                return data;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

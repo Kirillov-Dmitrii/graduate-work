@@ -14,7 +14,7 @@ CREATE TABLE users
     username VARCHAR(255),
     password VARCHAR(255),
     role INTEGER
-)
+);
 
 --changeset dkirillov:2
 CREATE TABLE ads
@@ -24,7 +24,7 @@ CREATE TABLE ads
     price INTEGER,
     description VARCHAR(255),
     title VARCHAR(255)
-)
+);
 
 --changeset dkirillov:3
 CREATE TABLE ads_comments
@@ -32,8 +32,8 @@ CREATE TABLE ads_comments
     pk SERIAL primary key,
     created_at VARCHAR(255),
     text VARCHAR(255),
-    author INTEGER
-)
+    author VARCHAR(255)
+);
 
 --changeset dkirillov:4
 ALTER TABLE ads ADD COLUMN user_id SERIAL;
@@ -53,7 +53,7 @@ CREATE TABLE ads_images
     file_path VARCHAR(255),
     file_size BIGINT not null,
     media_type VARCHAR (255)
-)
+);
 
 --changeset dkirillov:7
 ALTER TABLE ads_images ADD COLUMN ads_pk SERIAL;
@@ -66,7 +66,7 @@ CREATE TABLE user_image
     file_size BIGINT,
     media_type VARCHAR(255),
     data oid
-)
+);
 
 --changeset dkirillov:9
 ALTER TABLE user_image ADD COLUMN user_id SERIAL;

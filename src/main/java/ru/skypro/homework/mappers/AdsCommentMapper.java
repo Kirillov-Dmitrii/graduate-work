@@ -28,7 +28,6 @@ public class AdsCommentMapper {
 
     public AdsComment toEntity(AdsCommentDto dto) {
         AdsComment entity = new AdsComment();
-        entity.setPk(dto.getPk());
         entity.setText(dto.getText());
         entity.setAuthor(dto.getAuthor());
         entity.setCreatedAt(dto.getCreatedAt());

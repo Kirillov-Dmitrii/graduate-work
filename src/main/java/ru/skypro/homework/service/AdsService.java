@@ -40,6 +40,10 @@ public class AdsService {
         this.adsMapper = adsMapper;
         this.userMapper = userMapper;
     }
+
+    boolean exist(Integer id) {
+        return adsRepository.existsById(id);
+    }
     @Transactional
     public ResponseWrapperAds getAll() {
         List<Ads> allAds = adsRepository.findAll();

@@ -131,9 +131,10 @@ public class AdsController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/{ad_pk}/comments")
     ResponseEntity<AdsCommentDto> addComments(@PathVariable("ad_pk") Integer adPk,
-                                              @RequestBody AdsCommentDto adsCommentDto) {
+                                              @RequestBody AdsCommentDto adsCommentDto, Authentication authentication) {
         logger.info("addComments");
-        adsCommentService.addComments(adPk, adsCommentDto);
+        logger.info(adsCommentDto.toString());
+        adsCommentService.addAdsComment(adPk, adsCommentDto, authentication);
         return ResponseEntity.ok(adsCommentDto);
     }
     @Operation(
@@ -211,7 +212,7 @@ public class AdsController {
     @GetMapping("/{ad_pk}/comments/{id}")
     ResponseEntity<AdsCommentDto> getComments(@PathVariable("ad_pk") Integer adPk, @PathVariable("id") Integer id) {
         logger.info("getComment");
-        AdsCommentDto commentDto = adsCommentService.getComment(adPk, id);
+        AdsCommentDto commentDto = adsCommentService.getComment(id);
         return ResponseEntity.ok(commentDto);
     }
     @Operation(
@@ -226,34 +227,12 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not Found") })
-
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{ad_pk}/comments/{id}")
-    ResponseEntity<Void> deleteComments(@PathVariable("ad_pk") Integer adPk, @PathVariable("id") Integer id) {
+    ResponseEntity<Void> deleteComments(@PathVariable("ad_pk") Integer adPk, @PathVariable("id") Integer id, Authentication authentication) {
         logger.info("deleteComments");
-        adsCommentService.deleteComment(id);
+        adsCommentService.deleteAdsComment(id, authentication);
         return ResponseEntity.ok().build();
     }
 
-    @Operation(
-            summary = "Обновить комментарий",
-            description = "Позволяет редактировать комментарий"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "*/*", schema = @Schema(implementation = AdsCommentDto.class))),
-
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-
-            @ApiResponse(responseCode = "404", description = "Not Found")})
-
-//    @PreAuthorize("isAuthenticated()")
-    @PatchMapping("/{ad_pk}/comments/{id}")
-    ResponseEntity<AdsCommentDto> updateComments(@PathVariable("ad_pk") Integer adPk, @PathVariable("id") Integer id,
-                                                 @RequestBody AdsCommentDto adsCommentDtoBody) {
-        logger.info("updateComments");
-        AdsCommentDto commentDto = adsCommentService.updateComment(adPk, id, adsCommentDtoBody);
-        return ResponseEntity.ok(commentDto);
-    }
 }

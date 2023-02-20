@@ -12,7 +12,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
 @Table(name = "ads")
 public class Ads {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer pk;
 
     @ManyToOne

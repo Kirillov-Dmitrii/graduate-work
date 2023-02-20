@@ -79,6 +79,7 @@
             <artifactId>liquibase-core</artifactId>
         </dependency>
 
+
     </dependencies>
 
     <build>

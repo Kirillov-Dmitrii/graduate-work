@@ -10,4 +10,8 @@ import java.util.List;
 public interface AdsImageRepository extends JpaRepository<AdsImage, String> {
     List<AdsImage> findAdsImagesByAds_Pk(Integer adsPk);
 
+    AdsImage findByAds_Pk(Integer adPk);
+
+    boolean existsByAds_PkAndAds_User_Username(Integer adsPk, String userName);
+
 }
